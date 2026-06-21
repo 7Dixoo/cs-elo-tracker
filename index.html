@@ -273,11 +273,11 @@
       <div class="header-left">
         <div class="logo">
           <div class="logo-icon" id="logoIcon">&#127919;</div>
-          <div class="logo-text" id="logoText">CS <span id="logoSpan">Elo</span></div>
+          <div class="logo-text" id="logoText">CS 2 <span id="logoSpan"></span></div>
         </div>
         <!-- Game switcher: admin only -->
         <div class="game-switcher" id="gameSwitcher">
-          <span class="game-label" id="labelCS">CS Elo</span>
+          <span class="game-label" id="labelCS">CS 2</span>
           <button class="switch-track" id="switchTrack" title="Перемкнути гру">
             <div class="switch-thumb"></div>
           </button>
@@ -343,7 +343,7 @@
       <div id="dotaSection">
         <!-- Dota Players -->
         <div class="page active" id="page-dota-players">
-          <div class="page-header"><h1 class="page-title">Гравці Dota 2</h1></div>
+          <div class="page-header"><h1 class="page-title">Таблиця гравців</h1></div>
           <div class="table-wrap">
             <table>
               <thead>
@@ -518,9 +518,10 @@
       document.getElementById('labelDota').classList.toggle('active-dota', isDota);
 
       // Logo
-      document.getElementById('logoIcon').textContent = isDota ? '&#128481;' : '&#127919;';
-      document.getElementById('logoText').childNodes[0].textContent = isDota ? 'Dota ' : 'CS ';
-      document.getElementById('logoSpan').textContent = isDota ? '2' : 'Elo';
+      document.getElementById('logoIcon').innerHTML = isDota ? '&#127956;' : '&#127919;';
+      document.getElementById('logoText').innerHTML = isDota
+        ? 'Dota <span id="logoSpan" style="color:var(--accent)">2</span>'
+        : 'CS <span id="logoSpan" style="color:var(--accent)">2</span>';
 
       // Nav
       document.getElementById('csNav').style.display   = isDota ? 'none'   : 'flex';
