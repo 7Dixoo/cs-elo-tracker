@@ -12,24 +12,50 @@
       --amber: #EF9F27; --bg: #F9F8F5; --surface: #FFFFFF;
       --text: #1A1A1A; --muted: #6B7280; --border: #E5E5E0;
       --radius-md: 10px; --radius-lg: 16px;
+      --dota-red: #C23B22; --dota-red-light: #fdf0ee;
+      --accent: var(--teal); --accent-light: var(--teal-light);
     }
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
     /* ── Header ── */
-    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; }
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; transition: border-color 0.3s; }
+    body.dota-mode header { border-bottom-color: var(--dota-red); }
+
+    .header-left { display: flex; align-items: center; gap: 16px; }
     .logo { display: flex; align-items: center; gap: 10px; }
-    .logo-icon { width: 36px; height: 36px; background: var(--teal); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .logo-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: background 0.3s; }
     .logo-text { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
-    .logo-text span { color: var(--teal); }
+    .logo-text span { color: var(--accent); transition: color 0.3s; }
+
+    /* ── Game switcher ── */
+    .game-switcher { display: none; align-items: center; gap: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 99px; padding: 4px 6px; }
+    .game-switcher.visible { display: flex; }
+    .game-label { font-size: 12px; font-weight: 600; color: var(--muted); padding: 0 4px; white-space: nowrap; transition: color 0.2s; }
+    .game-label.active-cs { color: var(--teal); }
+    .game-label.active-dota { color: var(--dota-red); }
+    .switch-track { width: 36px; height: 20px; background: var(--teal); border-radius: 99px; position: relative; cursor: pointer; border: none; transition: background 0.3s; flex-shrink: 0; }
+    .switch-track.dota { background: var(--dota-red); }
+    .switch-thumb { width: 14px; height: 14px; background: #fff; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: transform 0.25s; }
+    .switch-track.dota .switch-thumb { transform: translateX(16px); }
+
     nav { display: flex; gap: 4px; align-items: center; }
     nav a { font-size: 14px; font-weight: 500; color: var(--muted); text-decoration: none; padding: 6px 14px; border-radius: var(--radius-md); transition: background 0.15s, color 0.15s; cursor: pointer; }
-    nav a.active, nav a:hover { background: var(--teal-light); color: var(--teal); }
+    nav a.active, nav a:hover { background: var(--accent-light); color: var(--accent); }
 
-    /* Admin badge + logout */
     .admin-badge { display: flex; align-items: center; gap: 8px; margin-left: 8px; }
-    .admin-pill { background: var(--teal); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 99px; letter-spacing: 0.4px; }
+    .admin-pill { background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 99px; letter-spacing: 0.4px; transition: background 0.3s; }
     .logout-btn { background: none; border: 1px solid var(--border); color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; padding: 5px 12px; border-radius: var(--radius-md); cursor: pointer; transition: background 0.15s, color 0.15s; }
     .logout-btn:hover { background: #fdeee9; color: var(--coral); border-color: var(--coral); }
+
+    /* ── Dota accent overrides (applied via body.dota-mode) ── */
+    body.dota-mode { --accent: var(--dota-red); --accent-light: var(--dota-red-light); }
+    body.dota-mode .elo-value { color: var(--dota-red); }
+    body.dota-mode .avatar { background: var(--dota-red-light); color: var(--dota-red); }
+    body.dota-mode th:hover { color: var(--dota-red); }
+    body.dota-mode th.sorted { color: var(--dota-red); }
+    body.dota-mode .spinner { border-top-color: var(--dota-red); }
+    body.dota-mode .winrate-bar-fill { background: var(--dota-red); }
+    body.dota-mode .wins-text { color: var(--dota-red); }
 
     /* ── Login screen ── */
     #loginScreen { display: none; min-height: 100vh; align-items: center; justify-content: center; background: var(--bg); }
@@ -50,9 +76,16 @@
     .login-back a { font-size: 13px; color: var(--muted); cursor: pointer; text-decoration: underline; }
     .login-back a:hover { color: var(--teal); }
 
-    /* ── Pages ── */
+    /* ── App shell ── */
     #appShell { display: none; }
     #appShell.visible { display: block; }
+
+    /* ── Game sections ── */
+    #csSection { display: block; }
+    #dotaSection { display: none; }
+    body.dota-mode #csSection { display: none; }
+    body.dota-mode #dotaSection { display: block; }
+
     .page { display: none; }
     .page.active { display: block; }
     main { max-width: 960px; margin: 0 auto; padding: 32px 24px 80px; }
@@ -62,41 +95,42 @@
     /* ── Buttons ── */
     .btn { display: inline-flex; align-items: center; gap: 6px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; padding: 10px 20px; border-radius: var(--radius-md); border: none; cursor: pointer; transition: opacity 0.15s, background 0.15s; }
     .btn:disabled { opacity: 0.38; cursor: not-allowed; }
-    .btn-primary { background: var(--teal); color: #fff; }
+    .btn-primary { background: var(--accent); color: #fff; }
     .btn-primary:hover:not(:disabled) { opacity: 0.88; }
     .btn-cancel { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
     .btn-cancel:hover:not(:disabled) { background: var(--bg); }
 
-    /* ── Players table ── */
+    /* ── Table ── */
     .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
     table { width: 100%; border-collapse: collapse; font-size: 14px; }
     thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
     th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); white-space: nowrap; cursor: pointer; user-select: none; }
-    th:hover { color: var(--teal); }
-    th.sorted { color: var(--teal); }
+    th:hover { color: var(--accent); }
+    th.sorted { color: var(--accent); }
     th .sort-arrow { display: inline-block; margin-left: 4px; opacity: 0.4; font-size: 10px; }
     th.sorted .sort-arrow { opacity: 1; }
     th.right, td.right { text-align: right; }
     th.center, td.center { text-align: center; }
     tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; }
     tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: var(--teal-light); }
+    tbody tr:hover { background: var(--accent-light); }
     td { padding: 14px 16px; vertical-align: middle; }
     .rank { font-weight: 600; color: var(--muted); font-size: 13px; }
     .rank-1 { color: #F5A623; } .rank-2 { color: #9B9B9B; } .rank-3 { color: #C47B4A; }
     .player-cell { display: flex; align-items: center; gap: 10px; }
-    .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--teal-light); color: var(--teal); font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--teal-light); color: var(--teal); font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.3s, color 0.3s; }
     .player-name { font-family: 'Fraunces', serif; font-weight: 600; font-size: 15px; color: var(--text); }
-    .elo-value { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; color: var(--teal); }
+    .elo-value { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; color: var(--teal); transition: color 0.3s; }
+    .mmr-value { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; color: var(--dota-red); }
     .winrate-cell { display: flex; align-items: center; gap: 10px; min-width: 110px; }
     .winrate-bar-track { flex: 1; height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
-    .winrate-bar-fill { height: 100%; border-radius: 99px; background: var(--teal); }
+    .winrate-bar-fill { height: 100%; border-radius: 99px; background: var(--teal); transition: background 0.3s; }
     .winrate-bar-fill.low { background: var(--coral); } .winrate-bar-fill.mid { background: var(--amber); }
     .winrate-pct { font-weight: 600; font-size: 13px; width: 36px; text-align: right; flex-shrink: 0; }
-    .wins-text { color: var(--teal); font-weight: 600; }
+    .wins-text { color: var(--teal); font-weight: 600; transition: color 0.3s; }
     .losses-text { color: var(--coral); font-weight: 600; }
     .state-row td { text-align: center; padding: 60px 16px; color: var(--muted); }
-    .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.7s linear infinite; margin-bottom: 12px; }
+    .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.7s linear infinite; margin-bottom: 12px; transition: border-top-color 0.3s; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ── Matches ── */
@@ -140,25 +174,23 @@
     .modal-body { flex: 1; overflow-y: auto; padding: 20px 24px; min-height: 0; }
     .modal-footer { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 24px; border-top: 1px solid var(--border); flex-shrink: 0; }
     .modal-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin-bottom: 10px; }
-
-    /* Step 1 layout */
     .select-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .select-col { display: flex; flex-direction: column; min-width: 0; min-height: 420px; }
     .mobile-tabs { display: none; gap: 4px; margin-bottom: 14px; flex-shrink: 0; }
     .mobile-tab { flex: 1; padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--bg); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px; }
-    .mobile-tab.active { background: var(--teal); color: #fff; border-color: var(--teal); }
+    .mobile-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
     .tab-badge { border-radius: 99px; font-size: 11px; font-weight: 700; padding: 1px 7px; background: rgba(255,255,255,0.25); }
     .mobile-tab:not(.active) .tab-badge { background: var(--border); color: var(--muted); }
     .search-input { width: 100%; padding: 10px 13px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: var(--radius-md); font-family: 'DM Sans', sans-serif; font-size: 14px; background: var(--bg); outline: none; color: var(--text); transition: border-color 0.15s; flex-shrink: 0; }
-    .search-input:focus { border-color: var(--teal); }
+    .search-input:focus { border-color: var(--accent); }
     .search-input::placeholder { color: var(--muted); }
     .player-pool { border: 1px solid var(--border); border-radius: var(--radius-md); overflow-y: auto; flex: 1; min-height: 0; }
     .pool-item { display: flex; align-items: center; gap: 8px; padding: 9px 12px; cursor: pointer; transition: background 0.12s; border-bottom: 1px solid var(--border); }
     .pool-item:last-child { border-bottom: none; }
-    .pool-item:hover { background: var(--teal-light); }
+    .pool-item:hover { background: var(--accent-light); }
     .pool-item-name { flex: 1; font-weight: 600; font-size: 13px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .pool-item-meta { font-size: 11px; color: var(--muted); display: flex; gap: 6px; flex-shrink: 0; align-items: center; }
-    .pool-add-btn { font-size: 11px; font-weight: 700; color: var(--teal); background: var(--teal-light); border: none; padding: 3px 8px; border-radius: 6px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+    .pool-add-btn { font-size: 11px; font-weight: 700; color: var(--accent); background: var(--accent-light); border: none; padding: 3px 8px; border-radius: 6px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
     .pool-add-btn:hover { opacity: 0.8; }
     .pool-empty { padding: 24px; text-align: center; color: var(--muted); font-size: 14px; }
     .selected-list { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; flex: 1; min-height: 0; }
@@ -168,8 +200,6 @@
     .selected-item-meta { font-size: 11px; color: var(--muted); display: flex; gap: 6px; flex-shrink: 0; }
     .remove-btn { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 18px; line-height: 1; padding: 2px 4px; border-radius: 4px; transition: color 0.15s, background 0.15s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .remove-btn:hover { color: var(--coral); background: #fdeee9; }
-
-    /* Teams */
     .teams-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .team-block { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
     .team-heading { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; padding: 10px 14px 6px; }
@@ -183,10 +213,16 @@
     .team-table tbody tr.highlighted { background: #fffbf0; }
     .team-table .col-swap { width: 8%; } .team-table .col-player { width: 38%; } .team-table .col-elo { width: 18%; } .team-table .col-form { width: 18%; } .team-table .col-wr { width: 18%; }
     .swap-btn { width: 24px; height: 24px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: background 0.15s, border-color 0.15s, color 0.15s; flex-shrink: 0; color: var(--muted); }
-    .swap-btn:hover:not(:disabled) { background: var(--teal-light); border-color: var(--teal); color: var(--teal); }
+    .swap-btn:hover:not(:disabled) { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
     .swap-btn.selected { background: var(--amber); border-color: var(--amber); color: #fff; }
-    .swap-btn.target { background: var(--teal-light); border-color: var(--teal); color: var(--teal); }
+    .swap-btn.target { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
     .swap-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+
+    /* ── Dota empty matches ── */
+    .dota-empty { text-align: center; padding: 80px 24px; color: var(--muted); }
+    .dota-empty-icon { font-size: 48px; margin-bottom: 16px; }
+    .dota-empty-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .dota-empty-sub { font-size: 14px; }
 
     @media (max-width: 640px) {
       .hide-mobile { display: none; }
@@ -200,12 +236,15 @@
       .select-col { display: none; min-height: 360px; }
       .select-col.tab-visible { display: flex; }
       .teams-grid { grid-template-columns: 1fr; }
+      .match-teams { grid-template-columns: 1fr; }
+      .game-switcher { padding: 3px 5px; }
+      .game-label { font-size: 11px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ── Login Screen ── -->
+  <!-- Login Screen -->
   <div id="loginScreen">
     <div class="login-card">
       <div class="login-logo">
@@ -216,11 +255,11 @@
       <div class="login-sub">Введіть дані для доступу до адмін-панелі</div>
       <div class="form-field">
         <label class="form-label">Email</label>
-        <input class="form-input" id="loginEmail" type="email"  autocomplete="username" />
+        <input class="form-input" id="loginEmail" type="email" autocomplete="username" />
       </div>
       <div class="form-field">
         <label class="form-label">Пароль</label>
-        <input class="form-input" id="loginPassword" type="password"  autocomplete="current-password" />
+        <input class="form-input" id="loginPassword" type="password" autocomplete="current-password" />
       </div>
       <div class="login-error" id="loginError"></div>
       <button class="btn-login" id="loginBtn">Увійти</button>
@@ -228,19 +267,35 @@
     </div>
   </div>
 
-  <!-- ── App Shell ── -->
+  <!-- App Shell -->
   <div id="appShell">
     <header>
-      <div class="logo">
-        <div class="logo-icon">&#127919;</div>
-        <div class="logo-text">CS <span>Elo</span></div>
+      <div class="header-left">
+        <div class="logo">
+          <div class="logo-icon" id="logoIcon">&#127919;</div>
+          <div class="logo-text" id="logoText">CS <span id="logoSpan">Elo</span></div>
+        </div>
+        <!-- Game switcher: admin only -->
+        <div class="game-switcher" id="gameSwitcher">
+          <span class="game-label" id="labelCS">CS Elo</span>
+          <button class="switch-track" id="switchTrack" title="Перемкнути гру">
+            <div class="switch-thumb"></div>
+          </button>
+          <span class="game-label" id="labelDota">Dota 2</span>
+        </div>
       </div>
-      <nav>
-        <a href="#" class="nav-link active" data-page="players">Гравці</a>
-        <a href="#" class="nav-link" data-page="matches">Матчі</a>
-        <!-- shown when not admin -->
+      <nav id="mainNav">
+        <!-- CS nav -->
+        <div id="csNav">
+          <a href="#" class="nav-link active" data-page="cs-players">Гравці</a>
+          <a href="#" class="nav-link" data-page="cs-matches">Матчі</a>
+        </div>
+        <!-- Dota nav -->
+        <div id="dotaNav" style="display:none">
+          <a href="#" class="nav-link dota-nav active" data-page="dota-players">Гравці</a>
+          <a href="#" class="nav-link dota-nav" data-page="dota-matches">Матчі</a>
+        </div>
         <a href="#" id="adminLoginLink" style="display:none">&#128274; Адмін</a>
-        <!-- shown when admin -->
         <div class="admin-badge" id="adminBadge" style="display:none">
           <span class="admin-pill">ADMIN</span>
           <button class="logout-btn" id="logoutBtn">Вийти</button>
@@ -249,43 +304,79 @@
     </header>
 
     <main>
-      <!-- Players page -->
-      <div class="page active" id="page-players">
-        <div class="page-header">
-          <h1 class="page-title">Таблиця гравців</h1>
+      <!-- ══ CS Section ══ -->
+      <div id="csSection">
+        <!-- CS Players -->
+        <div class="page active" id="page-cs-players">
+          <div class="page-header"><h1 class="page-title">Таблиця гравців</h1></div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th class="center">#</th>
+                  <th data-col="nickname" data-table="cs">Гравець <span class="sort-arrow">&#x21D5;</span></th>
+                  <th data-col="elo" data-table="cs" class="sorted right">Elo <span class="sort-arrow">&#x2193;</span></th>
+                  <th data-col="form" data-table="cs" class="right hide-mobile">Форма <span class="sort-arrow">&#x21D5;</span></th>
+                  <th data-col="games" data-table="cs" class="right hide-mobile">Матчі <span class="sort-arrow">&#x21D5;</span></th>
+                  <th data-col="wins" data-table="cs" class="right hide-mobile">Перемоги <span class="sort-arrow">&#x21D5;</span></th>
+                  <th data-col="winrate" data-table="cs" class="right">Вінрейт <span class="sort-arrow">&#x21D5;</span></th>
+                </tr>
+              </thead>
+              <tbody id="csTbody">
+                <tr class="state-row"><td colspan="7"><div><div class="spinner"></div></div><div>Завантаження...</div></td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th class="center">#</th>
-                <th data-col="nickname">Гравець <span class="sort-arrow">&#x21D5;</span></th>
-                <th data-col="elo" class="sorted right">Elo <span class="sort-arrow">&#x2193;</span></th>
-                <th data-col="form" class="right hide-mobile">Форма <span class="sort-arrow">&#x21D5;</span></th>
-                <th data-col="games" class="right hide-mobile">Матчі <span class="sort-arrow">&#x21D5;</span></th>
-                <th data-col="wins" class="right hide-mobile">Перемоги <span class="sort-arrow">&#x21D5;</span></th>
-                <th data-col="winrate" class="right">Вінрейт <span class="sort-arrow">&#x21D5;</span></th>
-              </tr>
-            </thead>
-            <tbody id="tbody">
-              <tr class="state-row"><td colspan="7"><div><div class="spinner"></div></div><div>Завантаження...</div></td></tr>
-            </tbody>
-          </table>
+
+        <!-- CS Matches -->
+        <div class="page" id="page-cs-matches">
+          <div class="page-header">
+            <h1 class="page-title">Матчі</h1>
+            <button class="btn btn-primary" id="createMatchBtn">+ Створити матч</button>
+          </div>
+          <div id="matchesList"></div>
         </div>
       </div>
 
-      <!-- Matches page -->
-      <div class="page" id="page-matches">
-        <div class="page-header">
-          <h1 class="page-title">Матчі</h1>
-          <button class="btn btn-primary" id="createMatchBtn">+ Створити матч</button>
+      <!-- ══ Dota Section ══ -->
+      <div id="dotaSection">
+        <!-- Dota Players -->
+        <div class="page active" id="page-dota-players">
+          <div class="page-header"><h1 class="page-title">Гравці Dota 2</h1></div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th class="center">#</th>
+                  <th data-col="nickname" data-table="dota">Гравець <span class="sort-arrow">&#x21D5;</span></th>
+                  <th data-col="mmr" data-table="dota" class="sorted right">MMR <span class="sort-arrow">&#x2193;</span></th>
+                  <th data-col="games" data-table="dota" class="right hide-mobile">Матчі <span class="sort-arrow">&#x21D5;</span></th>
+                  <th data-col="wins" data-table="dota" class="right hide-mobile">Перемоги <span class="sort-arrow">&#x21D5;</span></th>
+                  <th data-col="winrate" data-table="dota" class="right">Вінрейт <span class="sort-arrow">&#x21D5;</span></th>
+                </tr>
+              </thead>
+              <tbody id="dotaTbody">
+                <tr class="state-row"><td colspan="6"><div><div class="spinner"></div></div><div>Завантаження...</div></td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div id="matchesList"></div>
+
+        <!-- Dota Matches -->
+        <div class="page" id="page-dota-matches">
+          <div class="page-header"><h1 class="page-title">Матчі Dota 2</h1></div>
+          <div class="dota-empty">
+            <div class="dota-empty-icon">&#127956;</div>
+            <div class="dota-empty-title">Незабаром</div>
+            <div class="dota-empty-sub">Матчі Dota 2 з'являться тут у наступному оновленні</div>
+          </div>
+        </div>
       </div>
     </main>
   </div>
 
-  <!-- ── Delete Confirm Modal ── -->
+  <!-- Confirm delete modal -->
   <div class="confirm-overlay" id="confirmOverlay">
     <div class="confirm-modal">
       <div class="confirm-title">Видаляємо?</div>
@@ -296,7 +387,7 @@
     </div>
   </div>
 
-  <!-- ── Match Modal ── -->
+  <!-- Match creation modal (CS only) -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
       <div class="modal-header">
@@ -304,7 +395,6 @@
         <button class="modal-close" id="modalCloseBtn">&#x00D7;</button>
       </div>
       <div class="modal-body">
-        <!-- Step 1 -->
         <div id="stepSelect">
           <div class="mobile-tabs">
             <button class="mobile-tab active" id="tabPool" onclick="switchMobileTab('pool')">Гравці</button>
@@ -322,7 +412,6 @@
             </div>
           </div>
         </div>
-        <!-- Step 2 -->
         <div id="stepTeams" style="display:none">
           <div class="teams-grid" id="teamsGrid"></div>
         </div>
@@ -341,11 +430,11 @@
   </div>
 
   <script type="module">
-    import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { initializeApp }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, getDocs, addDoc, query, orderBy }
-                                from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+                              from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
-                                from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+                              from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey:            "AIzaSyAnl2eDvVhtOW7OpqPY_6OB9tx83qEl2f0",
@@ -360,37 +449,29 @@
     const db   = getFirestore(app);
     const auth = getAuth(app);
 
-    /* ════════════════════════════════════
-       STATE
-    ════════════════════════════════════ */
-    let allPlayers = [], selectedPlayers = [];
-    let teamA = [], teamB = [];
+    let allCsPlayers = [], allDotaPlayers = [];
+    let selectedPlayers = [], teamA = [], teamB = [];
     let swapSource = null;
-    let sortCol = 'elo', sortDir = 'desc';
+    let csSortCol = 'elo', csSortDir = 'desc';
+    let dotaSortCol = 'mmr', dotaSortDir = 'desc';
     let isAdmin = false;
-
+    let isDota = false;
     const LS_KEY = 'cs_elo_local_matches';
 
-    /* ════════════════════════════════════
-       AUTH
-    ════════════════════════════════════ */
+    /* ══ AUTH ══ */
     onAuthStateChanged(auth, user => {
       isAdmin = !!user;
-      showApp();
+      document.getElementById('appShell').classList.add('visible');
       updateAdminUI();
     });
 
-    function showApp() {
-      document.getElementById('loginScreen').classList.remove('visible');
-      document.getElementById('appShell').classList.add('visible');
-    }
-
     function updateAdminUI() {
-      document.getElementById('adminBadge').style.display     = isAdmin ? 'flex' : 'none';
-      document.getElementById('adminLoginLink').style.display = isAdmin ? 'none' : 'inline-block';
+      document.getElementById('adminBadge').style.display     = isAdmin ? 'flex'         : 'none';
+      document.getElementById('adminLoginLink').style.display = isAdmin ? 'none'          : 'inline-block';
+      document.getElementById('gameSwitcher').classList.toggle('visible', isAdmin);
+      if (!isAdmin && isDota) switchGame(false); // kick out of dota if logged out
     }
 
-    /* Login screen */
     document.getElementById('adminLoginLink').addEventListener('click', e => {
       e.preventDefault();
       document.getElementById('appShell').classList.remove('visible');
@@ -399,86 +480,113 @@
       document.getElementById('loginEmail').value = '';
       document.getElementById('loginPassword').value = '';
     });
-
     document.getElementById('backToApp').addEventListener('click', () => {
       document.getElementById('loginScreen').classList.remove('visible');
       document.getElementById('appShell').classList.add('visible');
     });
-
     document.getElementById('loginBtn').addEventListener('click', async () => {
-      const email    = document.getElementById('loginEmail').value.trim();
+      const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value;
-      const btn      = document.getElementById('loginBtn');
-      const errEl    = document.getElementById('loginError');
-      errEl.textContent = '';
-      btn.disabled = true;
-      btn.textContent = 'Вхід...';
+      const btn = document.getElementById('loginBtn');
+      document.getElementById('loginError').textContent = '';
+      btn.disabled = true; btn.textContent = 'Вхід...';
       try {
         await signInWithEmailAndPassword(auth, email, password);
-        showApp();
+        document.getElementById('loginScreen').classList.remove('visible');
+        document.getElementById('appShell').classList.add('visible');
         updateAdminUI();
       } catch(e) {
-        errEl.textContent = 'Невірний email або пароль';
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Увійти';
-      }
+        document.getElementById('loginError').textContent = 'Невірний email або пароль';
+      } finally { btn.disabled = false; btn.textContent = 'Увійти'; }
     });
-
-    // Allow Enter key on login form
     ['loginEmail','loginPassword'].forEach(id => {
-      document.getElementById(id).addEventListener('keydown', e => {
-        if (e.key === 'Enter') document.getElementById('loginBtn').click();
-      });
+      document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginBtn').click(); });
+    });
+    document.getElementById('logoutBtn').addEventListener('click', async () => { await signOut(auth); updateAdminUI(); });
+
+    /* ══ GAME SWITCHER ══ */
+    document.getElementById('switchTrack').addEventListener('click', () => {
+      if (!isAdmin) return;
+      switchGame(!isDota);
     });
 
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      await signOut(auth);
-      updateAdminUI();
-    });
+    function switchGame(toDota) {
+      isDota = toDota;
+      document.body.classList.toggle('dota-mode', isDota);
+      document.getElementById('switchTrack').classList.toggle('dota', isDota);
+      document.getElementById('labelCS').classList.toggle('active-cs', !isDota);
+      document.getElementById('labelDota').classList.toggle('active-dota', isDota);
 
-    /* ════════════════════════════════════
-       NAV
-    ════════════════════════════════════ */
-    document.querySelectorAll('.nav-link').forEach(link => {
+      // Logo
+      document.getElementById('logoIcon').textContent = isDota ? '&#128481;' : '&#127919;';
+      document.getElementById('logoText').childNodes[0].textContent = isDota ? 'Dota ' : 'CS ';
+      document.getElementById('logoSpan').textContent = isDota ? '2' : 'Elo';
+
+      // Nav
+      document.getElementById('csNav').style.display   = isDota ? 'none'   : 'flex';
+      document.getElementById('dotaNav').style.display = isDota ? 'flex'   : 'none';
+
+      // Reset pages
+      document.querySelectorAll('#csSection .page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('#dotaSection .page').forEach(p => p.classList.remove('active'));
+      if (isDota) {
+        document.getElementById('page-dota-players').classList.add('active');
+        document.querySelectorAll('.dota-nav').forEach(l => l.classList.remove('active'));
+        document.querySelector('.dota-nav[data-page="dota-players"]').classList.add('active');
+        loadDotaPlayers();
+      } else {
+        document.getElementById('page-cs-players').classList.add('active');
+        document.querySelectorAll('[data-table="cs"]').forEach(th => th.closest('tr') && th.closest('tr').querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')));
+        document.querySelector('[data-page="cs-players"]').classList.add('active');
+      }
+    }
+
+    /* ══ NAV ══ */
+    document.querySelectorAll('.nav-link[data-page]').forEach(link => {
       link.addEventListener('click', e => {
         e.preventDefault();
         const page = link.dataset.page;
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        const isD = page.startsWith('dota');
+        const navGroup = isD ? document.querySelectorAll('.dota-nav') : document.querySelectorAll('[data-table="cs"]~*,.nav-link:not(.dota-nav)');
+
+        // Deactivate correct nav group
+        if (isD) document.querySelectorAll('.dota-nav').forEach(l => l.classList.remove('active'));
+        else document.querySelectorAll('#csNav .nav-link').forEach(l => l.classList.remove('active'));
         link.classList.add('active');
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+
+        // Deactivate pages in correct section
+        const section = isD ? '#dotaSection' : '#csSection';
+        document.querySelectorAll(section + ' .page').forEach(p => p.classList.remove('active'));
         document.getElementById('page-' + page).classList.add('active');
-        if (page === 'matches') renderMatches();
+
+        if (page === 'cs-matches') renderMatches();
       });
     });
 
-    /* ════════════════════════════════════
-       PLAYERS TABLE
-    ════════════════════════════════════ */
-    async function loadPlayers() {
+    /* ══ CS PLAYERS ══ */
+    async function loadCsPlayers() {
       try {
         const snap = await getDocs(collection(db, 'players'));
-        allPlayers = snap.docs.map(d => {
+        allCsPlayers = snap.docs.map(d => {
           const p = d.data();
           p.winrate = p.games > 0 ? Math.round((p.wins / p.games) * 100) : 0;
           return p;
         });
-        renderTable();
+        renderCsTable();
       } catch(e) {
-        document.getElementById('tbody').innerHTML =
-          '<tr class="state-row"><td colspan="7">Помилка завантаження. Оновіть сторінку.</td></tr>';
+        document.getElementById('csTbody').innerHTML = '<tr class="state-row"><td colspan="7">Помилка завантаження.</td></tr>';
       }
     }
 
-    function renderTable() {
-      const sorted = [...allPlayers].sort((a, b) => {
-        let av = a[sortCol] ?? -Infinity, bv = b[sortCol] ?? -Infinity;
+    function renderCsTable() {
+      const sorted = [...allCsPlayers].sort((a, b) => {
+        let av = a[csSortCol] ?? -Infinity, bv = b[csSortCol] ?? -Infinity;
         if (typeof av === 'string') { av = av.toLowerCase(); bv = bv.toLowerCase(); }
-        if (av < bv) return sortDir === 'asc' ? -1 : 1;
-        if (av > bv) return sortDir === 'asc' ?  1 : -1;
+        if (av < bv) return csSortDir === 'asc' ? -1 : 1;
+        if (av > bv) return csSortDir === 'asc' ?  1 : -1;
         return 0;
       });
-      document.getElementById('tbody').innerHTML = sorted.map((p, i) => {
+      document.getElementById('csTbody').innerHTML = sorted.map((p, i) => {
         const rank = i + 1;
         const rl = rank === 1 ? '&#127947;' : rank === 2 ? '&#129352;' : rank === 3 ? '&#129353;' : rank;
         const rc = rank <= 3 ? 'rank-' + rank : '';
@@ -497,25 +605,88 @@
           '<td><div class="winrate-cell"><div class="winrate-bar-track"><div class="winrate-bar-fill ' + wrc + '" style="width:' + wr + '%"></div></div><span class="winrate-pct">' + wr + '%</span></div></td>' +
           '</tr>';
       }).join('');
-      document.querySelectorAll('th[data-col]').forEach(th => {
+      document.querySelectorAll('th[data-table="cs"]').forEach(th => {
         const col = th.dataset.col;
-        th.classList.toggle('sorted', col === sortCol);
-        th.querySelector('.sort-arrow').innerHTML = col === sortCol ? (sortDir === 'asc' ? '&#x2191;' : '&#x2193;') : '&#x21D5;';
+        th.classList.toggle('sorted', col === csSortCol);
+        th.querySelector('.sort-arrow').innerHTML = col === csSortCol ? (csSortDir === 'asc' ? '&#x2191;' : '&#x2193;') : '&#x21D5;';
       });
     }
 
-    document.querySelectorAll('th[data-col]').forEach(th => {
+    document.querySelectorAll('th[data-table="cs"]').forEach(th => {
       th.addEventListener('click', () => {
         const col = th.dataset.col;
-        if (sortCol === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-        else { sortCol = col; sortDir = col === 'nickname' ? 'asc' : 'desc'; }
-        renderTable();
+        if (csSortCol === col) csSortDir = csSortDir === 'asc' ? 'desc' : 'asc';
+        else { csSortCol = col; csSortDir = col === 'nickname' ? 'asc' : 'desc'; }
+        renderCsTable();
       });
     });
 
-    /* ════════════════════════════════════
-       MOBILE TAB SWITCHER
-    ════════════════════════════════════ */
+    /* ══ DOTA PLAYERS ══ */
+    async function loadDotaPlayers() {
+      const tbody = document.getElementById('dotaTbody');
+      tbody.innerHTML = '<tr class="state-row"><td colspan="6"><div><div class="spinner"></div></div><div>Завантаження...</div></td></tr>';
+      try {
+        const snap = await getDocs(collection(db, 'dota_players'));
+        allDotaPlayers = snap.docs.map(d => {
+          const p = d.data();
+          p.winrate = p.games > 0 ? Math.round((p.wins / p.games) * 100) : 0;
+          return p;
+        });
+        renderDotaTable();
+      } catch(e) {
+        tbody.innerHTML = '<tr class="state-row"><td colspan="6">Помилка завантаження.</td></tr>';
+      }
+    }
+
+    function renderDotaTable() {
+      const sorted = [...allDotaPlayers].sort((a, b) => {
+        let av = a[dotaSortCol] ?? -Infinity, bv = b[dotaSortCol] ?? -Infinity;
+        if (typeof av === 'string') { av = av.toLowerCase(); bv = bv.toLowerCase(); }
+        if (av < bv) return dotaSortDir === 'asc' ? -1 : 1;
+        if (av > bv) return dotaSortDir === 'asc' ?  1 : -1;
+        return 0;
+      });
+
+      const tbody = document.getElementById('dotaTbody');
+      if (sorted.length === 0) {
+        tbody.innerHTML = '<tr class="state-row"><td colspan="6">Гравців ще немає. Додайте їх у базу даних.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = sorted.map((p, i) => {
+        const rank = i + 1;
+        const rl = rank === 1 ? '&#127947;' : rank === 2 ? '&#129352;' : rank === 3 ? '&#129353;' : rank;
+        const rc = rank <= 3 ? 'rank-' + rank : '';
+        const ini = p.nickname.slice(0,2).toUpperCase();
+        const wr = p.winrate;
+        const wrc = wr >= 55 ? '' : wr >= 45 ? 'mid' : 'low';
+        return '<tr>' +
+          '<td class="rank center ' + rc + '">' + rl + '</td>' +
+          '<td><div class="player-cell"><div class="avatar" style="background:var(--dota-red-light);color:var(--dota-red)">' + ini + '</div><div class="player-name">' + p.nickname + '</div></div></td>' +
+          '<td class="right"><span class="mmr-value">' + p.mmr + '</span></td>' +
+          '<td class="right hide-mobile">' + p.games + '</td>' +
+          '<td class="right hide-mobile"><span style="color:var(--dota-red);font-weight:600">' + p.wins + '</span> <span style="color:var(--border)">/</span> <span class="losses-text">' + p.losses + '</span></td>' +
+          '<td><div class="winrate-cell"><div class="winrate-bar-track"><div class="winrate-bar-fill ' + wrc + '" style="width:' + wr + '%;background:' + (wrc===''?'var(--dota-red)':wrc==='mid'?'var(--amber)':'var(--coral)') + '"></div></div><span class="winrate-pct">' + wr + '%</span></div></td>' +
+          '</tr>';
+      }).join('');
+
+      document.querySelectorAll('th[data-table="dota"]').forEach(th => {
+        const col = th.dataset.col;
+        th.classList.toggle('sorted', col === dotaSortCol);
+        th.querySelector('.sort-arrow').innerHTML = col === dotaSortCol ? (dotaSortDir === 'asc' ? '&#x2191;' : '&#x2193;') : '&#x21D5;';
+      });
+    }
+
+    document.querySelectorAll('th[data-table="dota"]').forEach(th => {
+      th.addEventListener('click', () => {
+        const col = th.dataset.col;
+        if (dotaSortCol === col) dotaSortDir = dotaSortDir === 'asc' ? 'desc' : 'asc';
+        else { dotaSortCol = col; dotaSortDir = col === 'nickname' ? 'asc' : 'desc'; }
+        renderDotaTable();
+      });
+    });
+
+    /* ══ MOBILE TAB ══ */
     window.switchMobileTab = function(tab) {
       const isPool = tab === 'pool';
       document.getElementById('tabPool').classList.toggle('active', isPool);
@@ -524,9 +695,7 @@
       document.getElementById('colSelected').classList.toggle('tab-visible', !isPool);
     };
 
-    /* ════════════════════════════════════
-       MODAL
-    ════════════════════════════════════ */
+    /* ══ MODAL ══ */
     function openModal() {
       selectedPlayers = []; swapSource = null; teamA = []; teamB = [];
       showStep('select');
@@ -543,9 +712,7 @@
     document.getElementById('createMatchBtn').addEventListener('click', openModal);
     document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
     document.getElementById('cancelBtn').addEventListener('click', closeModal);
-    document.getElementById('modalOverlay').addEventListener('click', e => {
-      if (e.target === document.getElementById('modalOverlay')) closeModal();
-    });
+    document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target === document.getElementById('modalOverlay')) closeModal(); });
 
     function showStep(step) {
       document.getElementById('stepSelect').style.display   = step === 'select' ? '' : 'none';
@@ -554,12 +721,8 @@
       document.getElementById('footerTeams').style.display  = step === 'teams'  ? 'flex' : 'none';
     }
 
-    /* ════════════════════════════════════
-       POOL
-    ════════════════════════════════════ */
-    document.getElementById('searchInput').addEventListener('input', e => {
-      renderPool(e.target.value.trim().toLowerCase());
-    });
+    /* ══ POOL ══ */
+    document.getElementById('searchInput').addEventListener('input', e => { renderPool(e.target.value.trim().toLowerCase()); });
 
     function renderPool(q) {
       const full = selectedPlayers.length === 10;
@@ -571,17 +734,9 @@
       }
       colPool.style.display = '';
       if (window.innerWidth > 640) document.getElementById('colSelected').style.gridColumn = '';
-
-      const available = allPlayers
-        .filter(p => !selectedPlayers.some(s => s.nickname === p.nickname))
-        .filter(p => p.nickname.toLowerCase().includes(q))
-        .sort((a, b) => b.elo - a.elo);
-
+      const available = allCsPlayers.filter(p => !selectedPlayers.some(s => s.nickname === p.nickname)).filter(p => p.nickname.toLowerCase().includes(q)).sort((a, b) => b.elo - a.elo);
       const pool = document.getElementById('playerPool');
-      if (available.length === 0) {
-        pool.innerHTML = '<div class="pool-empty">' + (q ? 'Гравців не знайдено' : 'Всі гравці вже вибрані') + '</div>';
-        return;
-      }
+      if (available.length === 0) { pool.innerHTML = '<div class="pool-empty">' + (q ? 'Гравців не знайдено' : 'Всі гравці вже вибрані') + '</div>'; return; }
       pool.innerHTML = available.map(p => {
         const form = p.form != null ? p.form.toFixed(2) : '&#x2014;';
         return '<div class="pool-item" data-nick="' + p.nickname + '">' +
@@ -591,11 +746,10 @@
           '<button class="pool-add-btn" data-nick="' + p.nickname + '">+ Додати</button>' +
           '</div>';
       }).join('');
-
       pool.querySelectorAll('.pool-item').forEach(item => {
         item.addEventListener('click', () => {
           if (selectedPlayers.length >= 10) return;
-          const player = allPlayers.find(p => p.nickname === item.dataset.nick);
+          const player = allCsPlayers.find(p => p.nickname === item.dataset.nick);
           if (player && !selectedPlayers.some(s => s.nickname === player.nickname)) {
             selectedPlayers.push(player);
             syncModalState();
@@ -605,9 +759,7 @@
       });
     }
 
-    /* ════════════════════════════════════
-       SELECTED
-    ════════════════════════════════════ */
+    /* ══ SELECTED ══ */
     function renderSelected() {
       const count = selectedPlayers.length;
       document.getElementById('countLabel').textContent = count;
@@ -625,10 +777,7 @@
           '</div>';
       }).join('');
       list.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          selectedPlayers = selectedPlayers.filter(p => p.nickname !== btn.dataset.nick);
-          syncModalState();
-        });
+        btn.addEventListener('click', () => { selectedPlayers = selectedPlayers.filter(p => p.nickname !== btn.dataset.nick); syncModalState(); });
       });
     }
 
@@ -637,30 +786,20 @@
       renderSelected();
     }
 
-    /* ════════════════════════════════════
-       BALANCE
-    ════════════════════════════════════ */
-    document.getElementById('confirmBtn').addEventListener('click', () => {
-      balanceTeams(); swapSource = null; showStep('teams'); renderTeams();
-    });
-    document.getElementById('backBtn').addEventListener('click', () => {
-      swapSource = null; showStep('select');
-    });
+    /* ══ BALANCE ══ */
+    document.getElementById('confirmBtn').addEventListener('click', () => { balanceTeams(); swapSource = null; showStep('teams'); renderTeams(); });
+    document.getElementById('backBtn').addEventListener('click', () => { swapSource = null; showStep('select'); });
 
     function balanceTeams() {
       const sorted = [...selectedPlayers].sort((a, b) => b.elo - a.elo);
       teamA = []; teamB = [];
       sorted.forEach((p, i) => {
-        const slot = Math.floor(i / 2);
-        const first = i % 2 === 0;
-        const even  = slot % 2 === 0;
+        const slot = Math.floor(i / 2), first = i % 2 === 0, even = slot % 2 === 0;
         if ((even && first) || (!even && !first)) teamA.push(p); else teamB.push(p);
       });
     }
 
-    /* ════════════════════════════════════
-       TEAMS
-    ════════════════════════════════════ */
+    /* ══ TEAMS ══ */
     function avgElo(team) { return team.length ? Math.round(team.reduce((s,p) => s+p.elo,0)/team.length) : 0; }
     function avgForm(team) {
       const w = (team||[]).filter(p => p.form != null);
@@ -676,8 +815,8 @@
       const cls = letter === 'A' ? 'team-a' : 'team-b';
       const label = letter === 'A' ? 'Команда A' : 'Команда B';
       const rows = team.map(p => {
-        const isSel  = swapSource && swapSource.player.nickname === p.nickname;
-        const isTgt  = swapSource && swapSource.team !== letter;
+        const isSel = swapSource && swapSource.player.nickname === p.nickname;
+        const isTgt = swapSource && swapSource.team !== letter;
         const isMate = swapSource && swapSource.team === letter && !isSel;
         const sc = isSel ? 'selected' : isTgt ? 'target' : '';
         const fv = p.form != null ? p.form.toFixed(2) : '&#x2014;';
@@ -703,104 +842,72 @@
           if (!swapSource) { swapSource = { player, team }; }
           else if (swapSource.player.nickname === nick) { swapSource = null; }
           else if (swapSource.team !== team) {
-            const src = swapSource.team === 'A' ? teamA : teamB;
-            const dst = team === 'A' ? teamA : teamB;
-            const si = src.findIndex(p => p.nickname === swapSource.player.nickname);
-            const di = dst.findIndex(p => p.nickname === nick);
-            [src[si], dst[di]] = [dst[di], src[si]];
-            swapSource = null;
+            const src = swapSource.team === 'A' ? teamA : teamB, dst = team === 'A' ? teamA : teamB;
+            const si = src.findIndex(p => p.nickname === swapSource.player.nickname), di = dst.findIndex(p => p.nickname === nick);
+            [src[si], dst[di]] = [dst[di], src[si]]; swapSource = null;
           }
           renderTeams();
         });
       });
     }
 
-    /* ════════════════════════════════════
-       SAVE MATCH
-    ════════════════════════════════════ */
+    /* ══ SAVE MATCH ══ */
     document.getElementById('saveMatchBtn').addEventListener('click', async () => {
       const matchData = {
         teamA: teamA.map(p => ({ nickname: p.nickname, elo: p.elo, winrate: p.winrate, form: p.form ?? null })),
         teamB: teamB.map(p => ({ nickname: p.nickname, elo: p.elo, winrate: p.winrate, form: p.form ?? null })),
         createdAt: new Date()
       };
-
       if (isAdmin) {
-        // Save to Firestore
         try { await addDoc(collection(db, 'matches'), matchData); } catch(e) { console.error(e); }
       } else {
-        // Save to localStorage
         const local = getLocalMatches();
-        matchData.local = true;
-        matchData.id = 'local_' + Date.now();
+        matchData.local = true; matchData.id = 'local_' + Date.now();
         matchData.createdAt = matchData.createdAt.toISOString();
         local.unshift(matchData);
         localStorage.setItem(LS_KEY, JSON.stringify(local));
       }
-
       closeModal();
-      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-      document.querySelector('[data-page="matches"]').classList.add('active');
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById('page-matches').classList.add('active');
+      document.querySelectorAll('#csNav .nav-link').forEach(l => l.classList.remove('active'));
+      document.querySelector('[data-page="cs-matches"]').classList.add('active');
+      document.querySelectorAll('#csSection .page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-cs-matches').classList.add('active');
       renderMatches();
     });
 
-    /* ════════════════════════════════════
-       LOCAL STORAGE HELPERS
-    ════════════════════════════════════ */
-    function getLocalMatches() {
-      try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch { return []; }
-    }
+    /* ══ LOCAL STORAGE ══ */
+    function getLocalMatches() { try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch { return []; } }
 
-    /* ════════════════════════════════════
-       RENDER MATCHES
-    ════════════════════════════════════ */
+    /* ══ RENDER MATCHES ══ */
     async function renderMatches() {
       const container = document.getElementById('matchesList');
       container.innerHTML = '<div style="text-align:center;padding:40px"><div class="spinner" style="display:inline-block"></div></div>';
-
-      // Fetch DB matches
       let dbMatches = [];
       try {
         const snap = await getDocs(query(collection(db, 'matches'), orderBy('createdAt', 'desc')));
         dbMatches = snap.docs.map(d => ({ id: d.id, ...d.data(), local: false }));
       } catch(e) { console.error(e); }
-
-      // Get local matches
-      const localMatches = getLocalMatches().map(m => ({
-        ...m,
-        createdAt: { toDate: () => new Date(m.createdAt) },
-        local: true
-      }));
-
-      // Merge: local first, then DB
+      const localMatches = getLocalMatches().map(m => ({ ...m, createdAt: { toDate: () => new Date(m.createdAt) }, local: true }));
       const allMatches = [...localMatches, ...dbMatches];
-
       if (allMatches.length === 0) {
         container.innerHTML = '<div class="matches-empty"><div class="matches-empty-icon">&#127918;</div><div class="matches-empty-title">Матчів ще немає</div><div class="matches-empty-sub">Створіть перший матч, натиснувши кнопку вище</div></div>';
         return;
       }
-
       const teamRows = team => (team||[]).map(p =>
         '<div class="match-player-row"><span>' + p.nickname + '</span>' +
         '<span class="match-player-stats"><span>' + p.elo + ' elo</span><span>' + (p.form != null ? Number(p.form).toFixed(2) : '&#x2014;') + '</span></span></div>'
       ).join('');
-
-      // Number only DB matches for the official count
       let dbIdx = dbMatches.length;
       container.innerHTML = allMatches.map(match => {
         const date = match.createdAt?.toDate ? match.createdAt.toDate() : new Date();
         const dateStr = date.toLocaleString('uk-UA', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
         const isLocal = match.local;
         const title = isLocal ? 'Мій матч' : 'Матч #' + (dbIdx--);
-        return '<div class="match-card' + (isLocal ? ' local' : '') + '">' +
-          '<div class="match-card-header">' +
-          '<span class="match-card-title">' + title + '</span>' +
+        return '<div class="match-card">' +
+          '<div class="match-card-header"><span class="match-card-title">' + title + '</span>' +
           '<span class="match-card-right">' +
           (isLocal ? '<span class="local-badge">Мій матч</span><button class="trash-btn" data-id="' + match.id + '" title="Видалити"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4h6v2"></path></svg></button>' : '') +
-          '<span class="match-card-date">' + dateStr + '</span>' +
-          '</span></div>' +
+          '<span class="match-card-date">' + dateStr + '</span></span></div>' +
           '<div class="match-teams">' +
           '<div><div class="match-team-label ta">Команда A</div><div class="match-team-meta">Elo: <span>' + avgElo(match.teamA||[]) + '</span> &middot; Форма: <span>' + avgForm(match.teamA) + '</span></div>' + teamRows(match.teamA) + '</div>' +
           '<div><div class="match-team-label tb">Команда B</div><div class="match-team-meta">Elo: <span>' + avgElo(match.teamB||[]) + '</span> &middot; Форма: <span>' + avgForm(match.teamB) + '</span></div>' + teamRows(match.teamB) + '</div>' +
@@ -809,41 +916,25 @@
       attachTrashListeners();
     }
 
-    /* DELETE LOCAL MATCH */
+    /* ══ DELETE LOCAL ══ */
     let pendingDeleteId = null;
-
-    document.getElementById('confirmCancelBtn').addEventListener('click', () => {
-      pendingDeleteId = null;
-      document.getElementById('confirmOverlay').classList.remove('open');
-    });
-    document.getElementById('confirmOverlay').addEventListener('click', e => {
-      if (e.target === document.getElementById('confirmOverlay')) {
-        pendingDeleteId = null;
-        document.getElementById('confirmOverlay').classList.remove('open');
-      }
-    });
+    document.getElementById('confirmCancelBtn').addEventListener('click', () => { pendingDeleteId = null; document.getElementById('confirmOverlay').classList.remove('open'); });
+    document.getElementById('confirmOverlay').addEventListener('click', e => { if (e.target === document.getElementById('confirmOverlay')) { pendingDeleteId = null; document.getElementById('confirmOverlay').classList.remove('open'); } });
     document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
       if (!pendingDeleteId) return;
-      const local = getLocalMatches().filter(m => m.id !== pendingDeleteId);
-      localStorage.setItem(LS_KEY, JSON.stringify(local));
+      localStorage.setItem(LS_KEY, JSON.stringify(getLocalMatches().filter(m => m.id !== pendingDeleteId)));
       pendingDeleteId = null;
       document.getElementById('confirmOverlay').classList.remove('open');
       renderMatches();
     });
-
     function attachTrashListeners() {
       document.querySelectorAll('.trash-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          pendingDeleteId = btn.dataset.id;
-          document.getElementById('confirmOverlay').classList.add('open');
-        });
+        btn.addEventListener('click', () => { pendingDeleteId = btn.dataset.id; document.getElementById('confirmOverlay').classList.add('open'); });
       });
     }
 
-        /* ════════════════════════════════════
-       INIT
-    ════════════════════════════════════ */
-    loadPlayers();
+    /* ══ INIT ══ */
+    loadCsPlayers();
   </script>
 </body>
 </html>
