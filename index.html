@@ -698,8 +698,28 @@
     document.getElementById('confirmBtn').addEventListener('click',()=>{ balanceTeams(); swapSource=null; showStep('teams'); renderTeams(); });
     document.getElementById('backBtn').addEventListener('click',()=>{ swapSource=null; showStep('select'); });
     function balanceTeams() {
-      const sorted=[...selectedPlayers].sort((a,b)=>b.elo-a.elo); teamA=[]; teamB=[];
-      sorted.forEach((p,i)=>{ const slot=Math.floor(i/2),first=i%2===0,even=slot%2===0; if((even&&first)||(!even&&!first)) teamA.push(p); else teamB.push(p); });
+      // Balancing value per player = Elo * form (missing form counts as 1.00). Internal only — never shown.
+      const players = [...selectedPlayers].sort((a,b)=>(b.elo*(b.form!=null?b.form:1))-(a.elo*(a.form!=null?a.form:1)));
+      const bal = players.map(p=>p.elo*(p.form!=null?p.form:1));
+      const total = bal.reduce((s,v)=>s+v,0);
+      const n = players.length, half = Math.floor(n/2), k = half-1;
+      // Fix player 0 (top balancing value) to Team A, then pick its other (half-1) members from the rest.
+      // This enumerates each distinct split exactly once: C(9,4)=126 combinations for 10 players.
+      const rest=[]; for(let i=1;i<n;i++) rest.push(i);
+      let bestDiff=Infinity, bestSet=null;
+      const combo=[];
+      (function choose(start,depth){
+        if(depth===k){
+          const idxs=[0,...combo];
+          let sumA=0; idxs.forEach(i=>sumA+=bal[i]);
+          const diff=Math.abs(sumA-(total-sumA));
+          if(diff<bestDiff){ bestDiff=diff; bestSet=new Set(idxs); } // strict < => first-found wins, fully predictable
+          return;
+        }
+        for(let i=start;i<rest.length;i++){ combo.push(rest[i]); choose(i+1,depth+1); combo.pop(); }
+      })(0,0);
+      teamA=[]; teamB=[];
+      players.forEach((p,i)=>{ (bestSet.has(i)?teamA:teamB).push(p); });
     }
 
     /* Teams */
