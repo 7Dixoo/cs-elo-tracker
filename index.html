@@ -182,6 +182,10 @@
     .pool-item-meta { font-size: 11px; color: var(--muted); display: flex; gap: 6px; flex-shrink: 0; align-items: center; }
     .pool-add-btn { font-size: 11px; font-weight: 700; color: var(--accent); background: var(--accent-light); border: none; padding: 3px 8px; border-radius: 6px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
     .pool-add-btn:hover { opacity: 0.8; }
+    .pool-add-btn:disabled { color: var(--muted); background: var(--border); cursor: not-allowed; }
+    .pool-add-btn:disabled:hover { opacity: 1; }
+    .pool-item.disabled { cursor: default; }
+    .pool-item.disabled:hover { background: transparent; }
     .pool-empty { padding: 24px; text-align: center; color: var(--muted); font-size: 14px; }
     .selected-list { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; flex: 1; min-height: 0; }
     .selected-empty { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 13px; border: 2px dashed var(--border); border-radius: var(--radius-md); min-height: 120px; text-align: center; padding: 16px; }
@@ -666,18 +670,15 @@
     document.getElementById('searchInput').addEventListener('input', e => renderPool(e.target.value.trim().toLowerCase()));
     function renderPool(q) {
       const full = selectedPlayers.length===10;
-      const colPool = document.getElementById('colPool');
-      if(full) { colPool.style.display='none'; if(window.innerWidth>640) document.getElementById('colSelected').style.gridColumn='1 / -1'; return; }
-      colPool.style.display=''; if(window.innerWidth>640) document.getElementById('colSelected').style.gridColumn='';
       const available = allCsPlayers.filter(p=>!selectedPlayers.some(s=>s.nickname===p.nickname)&&p.nickname.toLowerCase().includes(q)).sort((a,b)=>b.elo-a.elo);
       const pool = document.getElementById('playerPool');
       if(!available.length) { pool.innerHTML='<div class="pool-empty">'+(q?'Гравців не знайдено':'Всі гравці вже вибрані')+'</div>'; return; }
-      pool.innerHTML = available.map(p=>'<div class="pool-item" data-nick="'+p.nickname+'"><div class="avatar" style="width:28px;height:28px;font-size:10px">'+p.nickname.slice(0,2).toUpperCase()+'</div><span class="pool-item-name">'+p.nickname+'</span><span class="pool-item-meta"><span>'+p.elo+' elo</span><span>'+(p.form!=null?p.form.toFixed(2):'&#x2014;')+'</span></span><button class="pool-add-btn" data-nick="'+p.nickname+'">+ Додати</button></div>').join('');
+      pool.innerHTML = available.map(p=>'<div class="pool-item'+(full?' disabled':'')+'" data-nick="'+p.nickname+'"><div class="avatar" style="width:28px;height:28px;font-size:10px">'+p.nickname.slice(0,2).toUpperCase()+'</div><span class="pool-item-name">'+p.nickname+'</span><span class="pool-item-meta"><span>'+p.elo+' elo</span><span>'+(p.form!=null?p.form.toFixed(2):'&#x2014;')+'</span></span><button class="pool-add-btn" data-nick="'+p.nickname+'"'+(full?' disabled':'')+'>+ Додати</button></div>').join('');
       pool.querySelectorAll('.pool-item').forEach(item => {
         item.addEventListener('click', () => {
           if(selectedPlayers.length>=10) return;
           const player = allCsPlayers.find(p=>p.nickname===item.dataset.nick);
-          if(player&&!selectedPlayers.some(s=>s.nickname===player.nickname)) { selectedPlayers.push(player); syncModalState(); if(selectedPlayers.length===10) switchMobileTab('selected'); }
+          if(player&&!selectedPlayers.some(s=>s.nickname===player.nickname)) { selectedPlayers.push(player); syncModalState(); }
         });
       });
     }
