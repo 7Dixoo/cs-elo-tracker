@@ -59,6 +59,10 @@
     .form-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
     .form-input { width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.15s; }
     .form-input:focus { border-color: var(--teal); }
+    .pos-options { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pos-chip { flex: 1; min-width: 52px; padding: 10px 0; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; text-align: center; transition: background 0.15s, color 0.15s, border-color 0.15s; }
+    .pos-chip:hover { border-color: var(--accent); color: var(--accent); }
+    .pos-chip.selected { background: var(--accent); color: #fff; border-color: var(--accent); }
     .login-error { font-size: 13px; color: var(--coral); margin-bottom: 14px; min-height: 20px; }
     .btn-login { width: 100%; padding: 12px; background: var(--teal); color: #fff; border: none; border-radius: var(--radius-md); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
     .btn-login:hover { opacity: 0.88; }
@@ -469,7 +473,13 @@
       <div class="modal-body">
         <div class="form-field"><label class="form-label">Нікнейм</label><input class="form-input" id="dotaNick" type="text" autocomplete="off" /></div>
         <div class="form-field"><label class="form-label">MMR</label><input class="form-input" id="dotaMmr" type="number" min="0" /></div>
-        <div class="form-field"><label class="form-label">Позиція (1–5)</label><input class="form-input" id="dotaPos" type="number" min="1" max="5" /></div>
+        <div class="form-field"><label class="form-label">Позиції</label><div class="pos-options" id="dotaPosOptions">
+          <button type="button" class="pos-chip" data-pos="1">1</button>
+          <button type="button" class="pos-chip" data-pos="2">2</button>
+          <button type="button" class="pos-chip" data-pos="3">3</button>
+          <button type="button" class="pos-chip" data-pos="4">4</button>
+          <button type="button" class="pos-chip" data-pos="5">5</button>
+        </div></div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-cancel" id="dotaPlayerCancelBtn">Скасувати</button>
@@ -659,17 +669,17 @@
     document.querySelectorAll('th[data-table="dota"]').forEach(th=>{th.addEventListener('click',()=>{const col=th.dataset.col;if(dotaSortCol===col)dotaSortDir=dotaSortDir==='asc'?'desc':'asc';else{dotaSortCol=col;dotaSortDir=col==='nickname'?'asc':'desc';}renderDotaTable();});});
 
     /* ═══ DOTA ADD PLAYER ═══ */
+    function getSelectedPositions(){ return [...document.querySelectorAll('#dotaPosOptions .pos-chip.selected')].map(c=>parseInt(c.dataset.pos)).sort((a,b)=>a-b); }
     function checkDotaPlayerBtn(){
       const nick=document.getElementById('dotaNick').value.trim();
       const mmr=document.getElementById('dotaMmr').value.trim();
-      const pos=parseInt(document.getElementById('dotaPos').value);
-      const valid=nick!==''&&mmr!==''&&!isNaN(pos)&&pos>=1&&pos<=5;
+      const valid=nick!==''&&mmr!==''&&getSelectedPositions().length>0;
       document.getElementById('dotaPlayerSaveBtn').disabled=!valid;
     }
     function openDotaPlayerModal(){
       document.getElementById('dotaNick').value='';
       document.getElementById('dotaMmr').value='';
-      document.getElementById('dotaPos').value='';
+      document.querySelectorAll('#dotaPosOptions .pos-chip').forEach(c=>c.classList.remove('selected'));
       checkDotaPlayerBtn();
       document.getElementById('dotaPlayerOverlay').classList.add('open');
       document.body.style.overflow='hidden';
@@ -679,16 +689,17 @@
     document.getElementById('dotaPlayerCloseBtn').addEventListener('click', closeDotaPlayerModal);
     document.getElementById('dotaPlayerCancelBtn').addEventListener('click', closeDotaPlayerModal);
     document.getElementById('dotaPlayerOverlay').addEventListener('click', e=>{ if(e.target===document.getElementById('dotaPlayerOverlay')) closeDotaPlayerModal(); });
-    ['dotaNick','dotaMmr','dotaPos'].forEach(id=>document.getElementById(id).addEventListener('input', checkDotaPlayerBtn));
+    ['dotaNick','dotaMmr'].forEach(id=>document.getElementById(id).addEventListener('input', checkDotaPlayerBtn));
+    document.querySelectorAll('#dotaPosOptions .pos-chip').forEach(chip=>chip.addEventListener('click',()=>{ chip.classList.toggle('selected'); checkDotaPlayerBtn(); }));
     document.getElementById('dotaPlayerSaveBtn').addEventListener('click', async ()=>{
       const nick=document.getElementById('dotaNick').value.trim();
       const mmr=parseInt(document.getElementById('dotaMmr').value);
-      const pos=parseInt(document.getElementById('dotaPos').value);
-      if(!nick||isNaN(mmr)||isNaN(pos)||pos<1||pos>5) return;
+      const positions=getSelectedPositions();
+      if(!nick||isNaN(mmr)||positions.length===0) return;
       const btn=document.getElementById('dotaPlayerSaveBtn');
       btn.disabled=true; btn.textContent='Додавання...';
       try {
-        await addDoc(collection(db,'dota_players'),{ nickname:nick, mmr:mmr, position:pos, games:0, wins:0, losses:0 });
+        await addDoc(collection(db,'dota_players'),{ nickname:nick, mmr:mmr, positions:positions, games:0, wins:0, losses:0 });
         closeDotaPlayerModal();
         loadDotaPlayers();
       } catch(e){ console.error('Add Dota player failed',e); }
