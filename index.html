@@ -360,7 +360,7 @@
       <div id="dotaSection">
         <!-- Dota Players -->
         <div class="page active" id="page-dota-players">
-          <div class="page-header"><h1 class="page-title">Таблиця гравців</h1></div>
+          <div class="page-header"><h1 class="page-title">Таблиця гравців</h1><button class="btn btn-primary" id="addDotaPlayerBtn">+ Додати гравця</button></div>
           <div class="table-wrap">
             <table>
               <thead><tr>
@@ -455,6 +455,25 @@
       <div class="modal-footer">
         <button class="btn btn-cancel" id="resultCancelBtn">Скасувати</button>
         <button class="btn btn-primary" id="resultSaveBtn" disabled>Зберегти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dota: add player modal -->
+  <div class="modal-overlay" id="dotaPlayerOverlay">
+    <div class="modal" style="max-width:480px">
+      <div class="modal-header">
+        <span class="modal-title">Додати гравця</span>
+        <button class="modal-close" id="dotaPlayerCloseBtn">&#x00D7;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-field"><label class="form-label">Нікнейм</label><input class="form-input" id="dotaNick" type="text" autocomplete="off" /></div>
+        <div class="form-field"><label class="form-label">MMR</label><input class="form-input" id="dotaMmr" type="number" min="0" /></div>
+        <div class="form-field"><label class="form-label">Позиція (1–5)</label><input class="form-input" id="dotaPos" type="number" min="1" max="5" /></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-cancel" id="dotaPlayerCancelBtn">Скасувати</button>
+        <button class="btn btn-primary" id="dotaPlayerSaveBtn" disabled>Додати</button>
       </div>
     </div>
   </div>
@@ -638,6 +657,43 @@
       document.querySelectorAll('th[data-table="dota"]').forEach(th=>{th.classList.toggle('sorted',th.dataset.col===dotaSortCol);th.querySelector('.sort-arrow').innerHTML=th.dataset.col===dotaSortCol?(dotaSortDir==='asc'?'&#x2191;':'&#x2193;'):'&#x21D5;';});
     }
     document.querySelectorAll('th[data-table="dota"]').forEach(th=>{th.addEventListener('click',()=>{const col=th.dataset.col;if(dotaSortCol===col)dotaSortDir=dotaSortDir==='asc'?'desc':'asc';else{dotaSortCol=col;dotaSortDir=col==='nickname'?'asc':'desc';}renderDotaTable();});});
+
+    /* ═══ DOTA ADD PLAYER ═══ */
+    function checkDotaPlayerBtn(){
+      const nick=document.getElementById('dotaNick').value.trim();
+      const mmr=document.getElementById('dotaMmr').value.trim();
+      const pos=parseInt(document.getElementById('dotaPos').value);
+      const valid=nick!==''&&mmr!==''&&!isNaN(pos)&&pos>=1&&pos<=5;
+      document.getElementById('dotaPlayerSaveBtn').disabled=!valid;
+    }
+    function openDotaPlayerModal(){
+      document.getElementById('dotaNick').value='';
+      document.getElementById('dotaMmr').value='';
+      document.getElementById('dotaPos').value='';
+      checkDotaPlayerBtn();
+      document.getElementById('dotaPlayerOverlay').classList.add('open');
+      document.body.style.overflow='hidden';
+    }
+    function closeDotaPlayerModal(){ document.getElementById('dotaPlayerOverlay').classList.remove('open'); document.body.style.overflow=''; }
+    document.getElementById('addDotaPlayerBtn').addEventListener('click', openDotaPlayerModal);
+    document.getElementById('dotaPlayerCloseBtn').addEventListener('click', closeDotaPlayerModal);
+    document.getElementById('dotaPlayerCancelBtn').addEventListener('click', closeDotaPlayerModal);
+    document.getElementById('dotaPlayerOverlay').addEventListener('click', e=>{ if(e.target===document.getElementById('dotaPlayerOverlay')) closeDotaPlayerModal(); });
+    ['dotaNick','dotaMmr','dotaPos'].forEach(id=>document.getElementById(id).addEventListener('input', checkDotaPlayerBtn));
+    document.getElementById('dotaPlayerSaveBtn').addEventListener('click', async ()=>{
+      const nick=document.getElementById('dotaNick').value.trim();
+      const mmr=parseInt(document.getElementById('dotaMmr').value);
+      const pos=parseInt(document.getElementById('dotaPos').value);
+      if(!nick||isNaN(mmr)||isNaN(pos)||pos<1||pos>5) return;
+      const btn=document.getElementById('dotaPlayerSaveBtn');
+      btn.disabled=true; btn.textContent='Додавання...';
+      try {
+        await addDoc(collection(db,'dota_players'),{ nickname:nick, mmr:mmr, position:pos, games:0, wins:0, losses:0 });
+        closeDotaPlayerModal();
+        loadDotaPlayers();
+      } catch(e){ console.error('Add Dota player failed',e); }
+      finally { btn.textContent='Додати'; checkDotaPlayerBtn(); }
+    });
 
     /* ═══ MOBILE TAB ═══ */
     window.switchMobileTab = function(tab) {
