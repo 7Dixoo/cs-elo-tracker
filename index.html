@@ -461,7 +461,7 @@
 
   <script type="module">
     import { initializeApp }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, query, orderBy }
+    import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, query, orderBy }
                               from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
                               from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -768,12 +768,51 @@
     function getLocalMatches() { try { return JSON.parse(localStorage.getItem(LS_KEY)||'[]'); } catch { return []; } }
     function saveLocalMatches(arr) { localStorage.setItem(LS_KEY,JSON.stringify(arr)); }
 
-    /* ═══ DELETE LOCAL ═══ */
-    let pendingDeleteId=null;
-    document.getElementById('confirmCancelBtn').addEventListener('click',()=>{ pendingDeleteId=null; document.getElementById('confirmOverlay').classList.remove('open'); });
-    document.getElementById('confirmOverlay').addEventListener('click',e=>{ if(e.target===document.getElementById('confirmOverlay')){pendingDeleteId=null;document.getElementById('confirmOverlay').classList.remove('open');} });
-    document.getElementById('confirmDeleteBtn').addEventListener('click',()=>{ if(!pendingDeleteId)return; saveLocalMatches(getLocalMatches().filter(m=>m.id!==pendingDeleteId)); pendingDeleteId=null; document.getElementById('confirmOverlay').classList.remove('open'); renderMatches(); });
-    function attachTrashListeners() { document.querySelectorAll('.trash-btn').forEach(btn=>{ btn.addEventListener('click',()=>{ pendingDeleteId=btn.dataset.id; document.getElementById('confirmOverlay').classList.add('open'); }); }); }
+    /* ═══ DELETE MATCH (local for guests, shared for admin) ═══ */
+    let pendingDeleteId=null, pendingDeleteLocal=false;
+    function closeConfirm(){ pendingDeleteId=null; pendingDeleteLocal=false; document.getElementById('confirmOverlay').classList.remove('open'); }
+    document.getElementById('confirmCancelBtn').addEventListener('click', closeConfirm);
+    document.getElementById('confirmOverlay').addEventListener('click',e=>{ if(e.target===document.getElementById('confirmOverlay')) closeConfirm(); });
+    document.getElementById('confirmDeleteBtn').addEventListener('click', async ()=>{
+      if(!pendingDeleteId) return;
+      const id=pendingDeleteId, isLoc=pendingDeleteLocal;
+      closeConfirm();
+      if(isLoc){
+        saveLocalMatches(getLocalMatches().filter(m=>m.id!==id));
+      } else {
+        await deleteSharedMatch(id);
+      }
+      renderMatches();
+    });
+    function attachTrashListeners() { document.querySelectorAll('.trash-btn').forEach(btn=>{ btn.addEventListener('click',()=>{ pendingDeleteId=btn.dataset.id; pendingDeleteLocal=btn.dataset.local==='1'; document.getElementById('confirmOverlay').classList.add('open'); }); }); }
+
+    // Delete a shared (Firestore) match. If it was finished, undo the exact Elo/games/wins/losses it added.
+    async function deleteSharedMatch(matchId) {
+      const match=_matchCache[matchId];
+      if(match && match.finished) {
+        const maps=match.maps||[];
+        const players=[...(match.teamA||[]),...(match.teamB||[])];
+        await Promise.all(players.map(async p=>{
+          const dbPlayer=allCsPlayers.find(cp=>cp.nickname===p.nickname);
+          if(!dbPlayer||!dbPlayer._id) return;
+          const onA=(match.teamA||[]).some(x=>x.nickname===p.nickname);
+          let wins=0, losses=0;
+          maps.forEach(m=>{ if((onA&&m.winner==='A')||(!onA&&m.winner==='B')) wins++; else losses++; });
+          const newElo=dbPlayer.elo-(p.eloChange||0);
+          const newGames=dbPlayer.games-maps.length;
+          const newWins=dbPlayer.wins-wins;
+          const newLosses=dbPlayer.losses-losses;
+          try {
+            await updateDoc(doc(db,'players',dbPlayer._id),{elo:newElo, games:newGames, wins:newWins, losses:newLosses});
+            dbPlayer.elo=newElo; dbPlayer.games=newGames; dbPlayer.wins=newWins; dbPlayer.losses=newLosses;
+            dbPlayer.winrate=newGames>0?Math.round((newWins/newGames)*100):0;
+          } catch(e){ console.error('Revert failed',p.nickname,e); }
+        }));
+      }
+      try { await deleteDoc(doc(db,'matches',matchId)); } catch(e){ console.error('Match delete failed',e); }
+      delete _matchCache[matchId];
+      renderCsTable();
+    }
 
     /* ═══ RESULT MODAL ═══ */
     function attachResultBtnListeners() {
@@ -835,9 +874,10 @@
         } else if(isAdmin||isLocal){
           statusHtml='<button class="add-result-btn" data-id="'+match.id+'" data-local="'+(isLocal?'1':'0')+'">+ Додати результат</button>';
         }
+        const localBadge = isLocal ? '<span class="local-badge">Мій матч</span>' : '';
+        const trashBtn = (isLocal||isAdmin) ? '<button class="trash-btn" data-id="'+match.id+'" data-local="'+(isLocal?'1':'0')+'" title="Видалити"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4h6v2"></path></svg></button>' : '';
         return '<div class="match-card"><div class="match-card-header"><span class="match-card-title">'+title+'</span><span class="match-card-right">'+
-          (isLocal?'<span class="local-badge">Мій матч</span><button class="trash-btn" data-id="'+match.id+'" title="Видалити"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4h6v2"></path></svg></button>':'')+
-          statusHtml+'<span class="match-card-date">'+dateStr+'</span></span></div>'+
+          localBadge+trashBtn+statusHtml+'<span class="match-card-date">'+dateStr+'</span></span></div>'+
           '<div class="match-teams">'+
           '<div><div class="match-team-label ta">Команда A</div><div class="match-team-meta">Elo: <span>'+avgElo(match.teamA||[])+'</span> &middot; Форма: <span>'+avgForm(match.teamA)+'</span></div>'+teamRows(match.teamA,finished)+'</div>'+
           '<div><div class="match-team-label tb">Команда B</div><div class="match-team-meta">Elo: <span>'+avgElo(match.teamB||[])+'</span> &middot; Форма: <span>'+avgForm(match.teamB)+'</span></div>'+teamRows(match.teamB,finished)+'</div>'+
