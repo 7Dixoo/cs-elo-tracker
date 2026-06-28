@@ -213,6 +213,7 @@
     .team-table tbody tr:last-child td { border-bottom: none; }
     .team-table tbody tr.highlighted { background: #fffbf0; }
     .team-table .col-swap { width: 8%; } .team-table .col-player { width: 38%; } .team-table .col-elo { width: 18%; } .team-table .col-form { width: 18%; } .team-table .col-wr { width: 18%; }
+    .team-table .col-mmr { width: 26%; } .team-table .col-role { width: 28%; }
     .swap-btn { width: 24px; height: 24px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: background 0.15s, border-color 0.15s, color 0.15s; flex-shrink: 0; color: var(--muted); }
     .swap-btn:hover:not(:disabled) { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
     .swap-btn.selected { background: var(--amber); border-color: var(--amber); color: #fff; }
@@ -381,8 +382,11 @@
         </div>
         <!-- Dota Matches -->
         <div class="page" id="page-dota-matches">
-          <div class="page-header"><h1 class="page-title">Матчі Dota 2</h1></div>
-          <div class="dota-empty"><div class="dota-empty-icon"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" y1="14" x2="9" y2="18"/><line x1="7" y1="17" x2="4" y2="20"/><line x1="3" y1="19" x2="5" y2="21"/></svg></div><div class="dota-empty-title">Незабаром</div><div class="dota-empty-sub">Матчі Dota 2 з'являться тут у наступному оновленні</div></div>
+          <div class="page-header">
+            <h1 class="page-title">Матчі</h1>
+            <button class="btn btn-primary" id="dotaCreateMatchBtn">+ Створити матч</button>
+          </div>
+          <div id="dotaMatchesList"></div>
         </div>
       </div>
     </main>
@@ -434,6 +438,46 @@
         <div id="footerTeams" style="display:none;gap:10px;justify-content:flex-end;width:100%">
           <button class="btn btn-cancel" id="backBtn">&#x2190; Назад</button>
           <button class="btn btn-primary" id="saveMatchBtn">Підтвердити</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dota match creation modal -->
+  <div class="modal-overlay" id="dotaModalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Створення матчу</span>
+        <button class="modal-close" id="dotaModalCloseBtn">&#x00D7;</button>
+      </div>
+      <div class="modal-body">
+        <div id="dotaStepSelect">
+          <div class="mobile-tabs">
+            <button class="mobile-tab active" id="dotaTabPool" onclick="switchDotaMobileTab('pool')">Гравці</button>
+            <button class="mobile-tab" id="dotaTabSelected" onclick="switchDotaMobileTab('selected')">Вибрані <span class="tab-badge" id="dotaMobileBadge">0</span></button>
+          </div>
+          <div class="select-layout">
+            <div class="select-col tab-visible" id="dotaColPool">
+              <div class="modal-section-title">Доступні гравці</div>
+              <input class="search-input" id="dotaSearchInput" type="text" placeholder="Пошук за нікнеймом..." autocomplete="off" />
+              <div class="player-pool" id="dotaPlayerPool"></div>
+            </div>
+            <div class="select-col" id="dotaColSelected">
+              <div class="modal-section-title">Вибрано: <span id="dotaCountLabel">0</span> / 10</div>
+              <div class="selected-list" id="dotaSelectedList"><div class="selected-empty">Оберіть гравців зліва</div></div>
+            </div>
+          </div>
+        </div>
+        <div id="dotaStepTeams" style="display:none"><div class="teams-grid" id="dotaTeamsGrid"></div></div>
+      </div>
+      <div class="modal-footer">
+        <div id="dotaFooterSelect" style="display:contents">
+          <button class="btn btn-cancel" id="dotaCancelBtn">Скасувати</button>
+          <button class="btn btn-primary" id="dotaConfirmBtn" disabled>Підтвердити</button>
+        </div>
+        <div id="dotaFooterTeams" style="display:none;gap:10px;justify-content:flex-end;width:100%">
+          <button class="btn btn-cancel" id="dotaBackBtn">&#x2190; Назад</button>
+          <button class="btn btn-primary" id="dotaSaveMatchBtn">Підтвердити</button>
         </div>
       </div>
     </div>
@@ -519,6 +563,7 @@
     let allCsPlayers = [], allDotaPlayers = [];
     let selectedPlayers = [], teamA = [], teamB = [];
     let swapSource = null;
+    let dotaSelectedPlayers = [], dotaTeamA = [], dotaTeamB = [], dotaSwapSource = null;
     let csSortCol = 'elo', csSortDir = 'desc';
     let dotaSortCol = 'mmr', dotaSortDir = 'desc';
     let isAdmin = false, isDota = false;
@@ -611,6 +656,7 @@
         document.querySelectorAll((isD ? '#dotaSection' : '#csSection') + ' .page').forEach(p => p.classList.remove('active'));
         document.getElementById('page-' + page).classList.add('active');
         if (page === 'cs-matches') renderMatches();
+        if (page === 'dota-matches') renderDotaMatches();
       });
     });
 
@@ -705,6 +751,105 @@
       } catch(e){ console.error('Add Dota player failed',e); }
       finally { btn.textContent='Додати'; checkDotaPlayerBtn(); }
     });
+
+    /* ═══ DOTA MATCH CREATION ═══ */
+    function posLabel(p){ const arr=(p.positions&&p.positions.length)?p.positions:(p.position!=null?[p.position]:[]); return arr.length?arr.join(', '):'&#x2014;'; }
+    function avgMmr(team){ return team.length?Math.round(team.reduce((s,p)=>s+p.mmr,0)/team.length):0; }
+
+    window.switchDotaMobileTab=function(tab){ const isPool=tab==='pool'; document.getElementById('dotaTabPool').classList.toggle('active',isPool); document.getElementById('dotaTabSelected').classList.toggle('active',!isPool); document.getElementById('dotaColPool').classList.toggle('tab-visible',isPool); document.getElementById('dotaColSelected').classList.toggle('tab-visible',!isPool); };
+
+    function openDotaModal(){
+      dotaSelectedPlayers=[]; dotaSwapSource=null; dotaTeamA=[]; dotaTeamB=[];
+      showDotaStep('select');
+      document.getElementById('dotaModalOverlay').classList.add('open');
+      document.body.style.overflow='hidden';
+      document.getElementById('dotaSearchInput').value='';
+      switchDotaMobileTab('pool');
+      syncDotaModalState();
+    }
+    function closeDotaModal(){ document.getElementById('dotaModalOverlay').classList.remove('open'); document.body.style.overflow=''; }
+    function showDotaStep(step){
+      document.getElementById('dotaStepSelect').style.display=step==='select'?'':'none';
+      document.getElementById('dotaStepTeams').style.display=step==='teams'?'':'none';
+      document.getElementById('dotaFooterSelect').style.display=step==='select'?'contents':'none';
+      document.getElementById('dotaFooterTeams').style.display=step==='teams'?'flex':'none';
+    }
+    document.getElementById('dotaCreateMatchBtn').addEventListener('click', openDotaModal);
+    document.getElementById('dotaModalCloseBtn').addEventListener('click', closeDotaModal);
+    document.getElementById('dotaCancelBtn').addEventListener('click', closeDotaModal);
+    document.getElementById('dotaModalOverlay').addEventListener('click', e=>{ if(e.target===document.getElementById('dotaModalOverlay')) closeDotaModal(); });
+
+    document.getElementById('dotaSearchInput').addEventListener('input', e=>renderDotaPool(e.target.value.trim().toLowerCase()));
+    function renderDotaPool(q){
+      const full=dotaSelectedPlayers.length===10;
+      const available=allDotaPlayers.filter(p=>!dotaSelectedPlayers.some(s=>s.nickname===p.nickname)&&p.nickname.toLowerCase().includes(q)).sort((a,b)=>b.mmr-a.mmr);
+      const pool=document.getElementById('dotaPlayerPool');
+      if(!available.length){ pool.innerHTML='<div class="pool-empty">'+(q?'Гравців не знайдено':(allDotaPlayers.length?'Всі гравці вже вибрані':'Спочатку додайте гравців')) +'</div>'; return; }
+      pool.innerHTML=available.map(p=>'<div class="pool-item'+(full?' disabled':'')+'" data-nick="'+p.nickname+'"><div class="avatar" style="width:28px;height:28px;font-size:10px">'+p.nickname.slice(0,2).toUpperCase()+'</div><span class="pool-item-name">'+p.nickname+'</span><span class="pool-item-meta"><span>'+p.mmr+' MMR</span><span>'+posLabel(p)+'</span></span><button class="pool-add-btn" data-nick="'+p.nickname+'"'+(full?' disabled':'')+'>+ Додати</button></div>').join('');
+      pool.querySelectorAll('.pool-item').forEach(item=>{ item.addEventListener('click',()=>{ if(dotaSelectedPlayers.length>=10) return; const player=allDotaPlayers.find(p=>p.nickname===item.dataset.nick); if(player&&!dotaSelectedPlayers.some(s=>s.nickname===player.nickname)){ dotaSelectedPlayers.push(player); syncDotaModalState(); } }); });
+    }
+    function renderDotaSelected(){
+      const count=dotaSelectedPlayers.length;
+      document.getElementById('dotaCountLabel').textContent=count;
+      document.getElementById('dotaMobileBadge').textContent=count;
+      document.getElementById('dotaConfirmBtn').disabled=count!==10;
+      const list=document.getElementById('dotaSelectedList');
+      if(!count){ list.innerHTML='<div class="selected-empty">Оберіть гравців зліва</div>'; return; }
+      list.innerHTML=dotaSelectedPlayers.map(p=>'<div class="selected-item"><div class="avatar" style="width:28px;height:28px;font-size:10px">'+p.nickname.slice(0,2).toUpperCase()+'</div><span class="selected-item-name">'+p.nickname+'</span><span class="selected-item-meta"><span>'+p.mmr+' MMR</span><span>'+posLabel(p)+'</span></span><button class="remove-btn" data-nick="'+p.nickname+'">&#x00D7;</button></div>').join('');
+      list.querySelectorAll('.remove-btn').forEach(btn=>{ btn.addEventListener('click',()=>{ dotaSelectedPlayers=dotaSelectedPlayers.filter(p=>p.nickname!==btn.dataset.nick); syncDotaModalState(); }); });
+    }
+    function syncDotaModalState(){ renderDotaPool(document.getElementById('dotaSearchInput').value.trim().toLowerCase()); renderDotaSelected(); }
+
+    document.getElementById('dotaConfirmBtn').addEventListener('click',()=>{ balanceDotaTeams(); dotaSwapSource=null; showDotaStep('teams'); renderDotaTeams(); });
+    document.getElementById('dotaBackBtn').addEventListener('click',()=>{ dotaSwapSource=null; showDotaStep('select'); });
+    // MVP: assign by selection order — Team A = picks 1–5, Team B = picks 6–10 (balancing is a later story).
+    function balanceDotaTeams(){ dotaTeamA=dotaSelectedPlayers.slice(0,5); dotaTeamB=dotaSelectedPlayers.slice(5,10); }
+
+    function renderDotaTeams(){ document.getElementById('dotaTeamsGrid').innerHTML=renderDotaTeamBlock('A',dotaTeamA)+renderDotaTeamBlock('B',dotaTeamB); attachDotaSwapListeners(); }
+    function renderDotaTeamBlock(letter,team){
+      const cls=letter==='A'?'team-a':'team-b', label=letter==='A'?'Команда A':'Команда B';
+      const rows=team.map(p=>{ const isSel=dotaSwapSource&&dotaSwapSource.player.nickname===p.nickname, isTgt=dotaSwapSource&&dotaSwapSource.team!==letter, isMate=dotaSwapSource&&dotaSwapSource.team===letter&&!isSel, sc=isSel?'selected':isTgt?'target':''; return '<tr class="'+(isSel?'highlighted':'')+'"><td class="col-swap"><button class="swap-btn '+sc+'" data-nick="'+p.nickname+'" data-team="'+letter+'" '+(isMate?'disabled':'')+'>&#x21C4;</button></td><td class="col-player">'+p.nickname+'</td><td class="col-mmr" style="font-weight:700;color:var(--accent)">'+p.mmr+'</td><td class="col-role">'+posLabel(p)+'</td></tr>'; }).join('');
+      return '<div class="team-block"><div class="team-heading '+cls+'">'+label+'</div><div class="team-meta">Середній MMR: <span>'+avgMmr(team)+'</span></div><table class="team-table"><thead><tr><th class="col-swap"></th><th class="col-player">Гравець</th><th class="col-mmr">MMR</th><th class="col-role">Роль</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+    }
+    function attachDotaSwapListeners(){
+      document.querySelectorAll('#dotaTeamsGrid .swap-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>{ const nick=btn.dataset.nick,team=btn.dataset.team,player=(team==='A'?dotaTeamA:dotaTeamB).find(p=>p.nickname===nick); if(!dotaSwapSource){dotaSwapSource={player,team};}else if(dotaSwapSource.player.nickname===nick){dotaSwapSource=null;}else if(dotaSwapSource.team!==team){const src=dotaSwapSource.team==='A'?dotaTeamA:dotaTeamB,dst=team==='A'?dotaTeamA:dotaTeamB,si=src.findIndex(p=>p.nickname===dotaSwapSource.player.nickname),di=dst.findIndex(p=>p.nickname===nick);[src[si],dst[di]]=[dst[di],src[si]];dotaSwapSource=null;}renderDotaTeams(); });
+      });
+    }
+
+    document.getElementById('dotaSaveMatchBtn').addEventListener('click', async ()=>{
+      const pack=p=>({nickname:p.nickname,mmr:p.mmr,positions:(p.positions&&p.positions.length)?p.positions:(p.position!=null?[p.position]:[])});
+      const matchData={ teamA: dotaTeamA.map(pack), teamB: dotaTeamB.map(pack), createdAt:new Date(), finished:false };
+      const btn=document.getElementById('dotaSaveMatchBtn'); btn.disabled=true;
+      try { await addDoc(collection(db,'dota_matches'),matchData); } catch(e){ console.error('Save Dota match failed',e); }
+      btn.disabled=false;
+      closeDotaModal();
+      document.querySelectorAll('.dota-nav').forEach(l=>l.classList.remove('active'));
+      document.querySelector('.dota-nav[data-page="dota-matches"]').classList.add('active');
+      document.querySelectorAll('#dotaSection .page').forEach(p=>p.classList.remove('active'));
+      document.getElementById('page-dota-matches').classList.add('active');
+      renderDotaMatches();
+    });
+
+    async function renderDotaMatches(){
+      const container=document.getElementById('dotaMatchesList');
+      container.innerHTML='<div style="text-align:center;padding:40px"><div class="spinner" style="display:inline-block"></div></div>';
+      let matches=[];
+      try { const snap=await getDocs(query(collection(db,'dota_matches'),orderBy('createdAt','desc'))); matches=snap.docs.map(d=>({id:d.id,...d.data()})); } catch(e){ console.error(e); }
+      if(!matches.length){ container.innerHTML='<div class="matches-empty"><div class="matches-empty-icon">&#9876;</div><div class="matches-empty-title">Матчів ще немає</div><div class="matches-empty-sub">Створіть перший матч, натиснувши кнопку вище</div></div>'; return; }
+      const teamRows=team=>(team||[]).map(p=>'<div class="match-player-row"><span>'+p.nickname+'</span><span class="match-player-stats"><span>'+p.mmr+' MMR</span><span>'+posLabel(p)+'</span></span></div>').join('');
+      let idx=matches.length;
+      container.innerHTML=matches.map(m=>{
+        const date=m.createdAt?.toDate?m.createdAt.toDate():new Date();
+        const dateStr=date.toLocaleString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+        const title='Матч #'+(idx--);
+        return '<div class="match-card"><div class="match-card-header"><span class="match-card-title">'+title+'</span><span class="match-card-right"><span class="match-card-date">'+dateStr+'</span></span></div>'+
+          '<div class="match-teams">'+
+          '<div><div class="match-team-label ta">Команда A</div><div class="match-team-meta">MMR: <span>'+avgMmr(m.teamA||[])+'</span></div>'+teamRows(m.teamA)+'</div>'+
+          '<div><div class="match-team-label tb">Команда B</div><div class="match-team-meta">MMR: <span>'+avgMmr(m.teamB||[])+'</span></div>'+teamRows(m.teamB)+'</div>'+
+          '</div></div>';
+      }).join('');
+    }
 
     /* ═══ MOBILE TAB ═══ */
     window.switchMobileTab = function(tab) {
