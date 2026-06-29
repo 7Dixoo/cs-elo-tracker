@@ -261,6 +261,18 @@
     .stats-input:focus { border-color: var(--teal); }
     .stats-input.invalid { border-color: var(--coral); background: #fdeee9; }
     .stats-nick { font-weight: 600; }
+    .upload-zone { border: 2px dashed var(--border); border-radius: var(--radius-lg); padding: 48px 24px; margin: 24px; text-align: center; transition: border-color .15s, background .15s; cursor: pointer; }
+    .upload-zone.drag { border-color: var(--teal); background: var(--teal-light); }
+    .upload-icon { font-size: 34px; color: var(--muted); margin-bottom: 12px; }
+    .upload-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+    .upload-sub { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+    .upload-warn { margin: 12px 24px 0; padding: 10px 14px; border: 1px solid var(--coral); background: #fdeee9; color: var(--coral); border-radius: var(--radius-md); font-size: 13px; }
+    .result-head { display: flex; align-items: center; gap: 16px; padding: 16px 24px; background: var(--bg); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .result-map { font-family: 'Fraunces', serif; font-weight: 700; font-size: 18px; }
+    .result-score { display: flex; align-items: center; gap: 8px; font-family: 'Fraunces', serif; font-weight: 700; font-size: 22px; }
+    .result-score .rscore { color: var(--muted); } .result-score .rscore.win { color: var(--teal); }
+    .result-winner { font-size: 13px; font-weight: 600; color: var(--muted); }
+    .result-head .btn-sm { margin-left: auto; }
 
     /* Dota empty */
     .dota-empty { text-align: center; padding: 80px 24px; color: var(--muted); }
@@ -570,7 +582,8 @@
 
     // Result modal state
     let currentResultMatch = null; // { matchData, matchId, isLocal }
-    let mapCount = 2;
+    let mapCount = 1;
+    let mapResults = [];
     let activeMapIdx = 0;
 
     /* ═══ AUTH ═══ */
@@ -1102,7 +1115,8 @@
     /* ── Result modal open ── */
     function openResultModal({matchData, matchId, isLocal}) {
       currentResultMatch = {matchData, matchId, isLocal};
-      mapCount = 2;
+      mapCount = 1;
+      mapResults = new Array(mapCount).fill(null);
       activeMapIdx = 0;
       buildResultModal();
       document.getElementById('resultModalOverlay').classList.add('open');
@@ -1122,6 +1136,7 @@
     document.getElementById('addMapBtn').addEventListener('click', () => {
       if(mapCount>=7) return;
       mapCount++;
+      mapResults.push(null);
       activeMapIdx=mapCount-1;
       buildResultModal();
     });
@@ -1129,165 +1144,137 @@
       if(mapCount<=1) return;
       if(activeMapIdx>=mapCount-1) activeMapIdx=mapCount-2;
       mapCount--;
+      mapResults.pop();
       buildResultModal();
     });
 
+    const norm = s => String(s == null ? '' : s).trim().toLowerCase();
+
+    // Map an uploaded results file onto this match's Команда A / Команда B
+    function processResult(json) {
+      const {matchData} = currentResultMatch;
+      const byNick = {};
+      (json.players || []).forEach(p => { byNick[norm(p.nickname)] = {
+        kills:p.kills, deaths:p.deaths, adr:p.adr, rating:p.rating, kast:p.kast, assists:p.assists, team:String(p.team)
+      };});
+      const groupOf = team => {
+        const c = {}; (team || []).forEach(p => { const s = byNick[norm(p.nickname)]; if (s) c[s.team] = (c[s.team]||0)+1; });
+        const keys = Object.keys(c); return keys.length ? keys.sort((a,b)=>c[b]-c[a])[0] : null;
+      };
+      const gA = groupOf(matchData.teamA), gB = groupOf(matchData.teamB);
+      const score = json.score || {};
+      const scoreA = gA != null ? (score[gA] != null ? score[gA] : 0) : 0;
+      const scoreB = gB != null ? (score[gB] != null ? score[gB] : 0) : 0;
+      const winner = scoreA > scoreB ? 'A' : scoreB > scoreA ? 'B' : null;
+      const allApp = [...(matchData.teamA||[]), ...(matchData.teamB||[])];
+      const unmatched = allApp.filter(p => !byNick[norm(p.nickname)]).map(p => p.nickname);
+      return { map: json.map || '', scoreA, scoreB, winner, statsByNick: byNick, unmatched, gA, gB };
+    }
+
+    function readResultFile(file, i) {
+      const fr = new FileReader();
+      fr.onload = () => {
+        let json; try { json = JSON.parse(fr.result); } catch(e) { alert('Файл не є коректним JSON'); return; }
+        if (!json || !Array.isArray(json.players)) { alert('Це не схоже на файл результату матчу'); return; }
+        const res = processResult(json); res.fileName = file.name;
+        mapResults[i] = res; buildResultModal();
+      };
+      fr.readAsText(file);
+    }
+
+    function uploadZoneHTML(i) {
+      return '<div class="upload-zone" id="dropZone'+i+'">'+
+        '<input type="file" accept="application/json,.json" id="fileInput'+i+'" style="display:none">'+
+        '<div class="upload-icon">&#x2B06;</div>'+
+        '<div class="upload-title">Завантажте файл результату</div>'+
+        '<div class="upload-sub">JSON, згенерований скриптом, для Карти '+(i+1)+'</div>'+
+        '<button class="btn btn-primary" id="browseBtn'+i+'">Обрати файл</button>'+
+        '</div>';
+    }
+
+    function statsTableHTML(label, cls, players, res) {
+      const rows = (players || []).map(p => {
+        const s = res.statsByNick[norm(p.nickname)];
+        const cells = s
+          ? '<td>'+s.kills+'</td><td>'+s.deaths+'</td><td>'+s.adr+'</td><td>'+(s.kast!=null?s.kast+'%':'&#x2014;')+'</td><td style="font-weight:700">'+s.rating+'</td>'
+          : '<td colspan="5" style="color:var(--coral)">не знайдено у файлі</td>';
+        return '<tr><td class="stats-nick">'+p.nickname+'</td>'+cells+'</tr>';
+      }).join('');
+      return '<div class="stats-team-title '+cls+'">'+label+'</div>'+
+        '<table class="stats-table"><thead><tr><th>Гравець</th><th>K</th><th>D</th><th>ADR</th><th>KAST</th><th>Rating</th></tr></thead><tbody>'+rows+'</tbody></table>';
+    }
+
+    function resultViewHTML(res, matchData, i) {
+      const wA = res.winner === 'A', wB = res.winner === 'B';
+      const warn = res.unmatched.length
+        ? '<div class="upload-warn">Не зіставлено з файлом: '+res.unmatched.join(', ')+'. Перевірте, що нікнейми у грі та в застосунку збігаються.</div>'
+        : '';
+      return '<div class="result-head">'+
+          '<div class="result-map">'+(res.map || 'Карта')+'</div>'+
+          '<div class="result-score"><span class="rscore'+(wA?' win':'')+'">'+res.scoreA+'</span><span>:</span><span class="rscore'+(wB?' win':'')+'">'+res.scoreB+'</span></div>'+
+          '<div class="result-winner">'+(wA?'Перемога: Команда A':wB?'Перемога: Команда B':'Нічия?')+'</div>'+
+          '<button class="btn btn-sm btn-cancel" id="replaceBtn'+i+'">Інший файл</button>'+
+        '</div>'+warn+
+        '<div class="stats-section">'+
+          statsTableHTML('Команда A','ta',matchData.teamA,res)+
+          statsTableHTML('Команда B','tb',matchData.teamB,res)+
+        '</div>';
+    }
+
+    function wireMapUploads(i) {
+      const input = document.getElementById('fileInput'+i);
+      const browse = document.getElementById('browseBtn'+i);
+      const zone = document.getElementById('dropZone'+i);
+      const replace = document.getElementById('replaceBtn'+i);
+      if (zone && input) zone.addEventListener('click', () => input.click());
+      if (browse) browse.addEventListener('click', e => { e.stopPropagation(); input.click(); });
+      if (input) input.addEventListener('change', e => { if (e.target.files && e.target.files[0]) readResultFile(e.target.files[0], i); });
+      if (zone) {
+        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+        zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+        zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('drag'); if (e.dataTransfer.files && e.dataTransfer.files[0]) readResultFile(e.dataTransfer.files[0], i); });
+      }
+      if (replace) replace.addEventListener('click', () => { mapResults[i] = null; buildResultModal(); });
+    }
+
     function buildResultModal() {
       const {matchData} = currentResultMatch;
-
-      // Collect existing values from inputs before rebuild
-      const savedValues = collectCurrentValues();
-
-      // Build tabs
       const bar = document.getElementById('mapTabsBar');
-      bar.querySelectorAll('.map-tab').forEach(t=>t.remove());
+      bar.querySelectorAll('.map-tab').forEach(t => t.remove());
       const actions = bar.querySelector('.map-tab-actions');
-      for(let i=0;i<mapCount;i++){
-        const tab=document.createElement('button');
-        tab.className='map-tab'+(i===activeMapIdx?' active':'');
-        tab.textContent='Карта '+(i+1);
-        tab.dataset.idx=i;
-        tab.addEventListener('click',()=>{ activeMapIdx=i; buildResultModal(); });
+      for (let i = 0; i < mapCount; i++) {
+        const tab = document.createElement('button');
+        tab.className = 'map-tab' + (i === activeMapIdx ? ' active' : '');
+        tab.textContent = 'Карта ' + (i+1) + (mapResults[i] ? ' \u2713' : '');
+        tab.addEventListener('click', () => { activeMapIdx = i; buildResultModal(); });
         bar.insertBefore(tab, actions);
       }
-
-      // Build body
       const body = document.getElementById('resultBody');
-      body.innerHTML='';
-      for(let i=0;i<mapCount;i++){
-        const sv = savedValues[i]||{};
-        const div=document.createElement('div');
-        div.className='map-content'+(i===activeMapIdx?' active':'');
-        div.dataset.mapIdx=i;
-
-        const scoreA = sv.scoreA||'';
-        const scoreB = sv.scoreB||'';
-        const mapName = sv.map||MAP_POOL[0];
-
-        div.innerHTML=
-          '<div class="map-header">'+
-          '<select class="map-selector" data-map-idx="'+i+'">'+MAP_POOL.map(m=>'<option'+(m===mapName?' selected':'')+'>'+m+'</option>').join('')+'</select>'+
-          '<div class="score-inputs">'+
-          '<span class="score-label">Команда A</span>'+
-          '<input class="score-field" type="number" min="0" max="30" data-score="A" data-map-idx="'+i+'" value="'+scoreA+'" placeholder="0">'+
-          '<span class="score-sep">:</span>'+
-          '<input class="score-field" type="number" min="0" max="30" data-score="B" data-map-idx="'+i+'" value="'+scoreB+'" placeholder="0">'+
-          '<span class="score-label">Команда B</span>'+
-          '<span class="score-winner-badge" id="winnerBadge'+i+'"></span>'+
-          '</div></div>'+
-          '<div class="stats-section">'+
-          '<div class="stats-team-title ta">Команда A</div>'+
-          buildStatsTable('A', matchData.teamA||[], i, sv.playersA||{})+
-          '<div class="stats-team-title tb">Команда B</div>'+
-          buildStatsTable('B', matchData.teamB||[], i, sv.playersB||{})+
-          '</div>';
-        body.appendChild(div);
-
-        // Score change listeners
-        div.querySelectorAll('.score-field').forEach(inp=>{
-          inp.addEventListener('input',()=>{ updateWinnerBadge(i); checkSaveBtn(); });
-        });
-        // Stats input listeners
-        div.querySelectorAll('.stats-input').forEach(inp=>{
-          inp.addEventListener('input', checkSaveBtn);
-        });
-        // Map selector listener
-        div.querySelector('.map-selector').addEventListener('change', ()=>{ buildResultModal(); });
-        updateWinnerBadge(i);
-      }
+      const i = activeMapIdx, res = mapResults[i];
+      body.innerHTML = res ? resultViewHTML(res, matchData, i) : uploadZoneHTML(i);
+      wireMapUploads(i);
       checkSaveBtn();
     }
 
-    function buildStatsTable(team, players, mapIdx, savedPlayerData) {
-      const rows = players.map(p=>{
-        const s = savedPlayerData[p.nickname]||{};
-        return '<tr>'+
-          '<td class="stats-nick">'+p.nickname+'</td>'+
-          '<td><input class="stats-input" type="number" min="0" data-field="kills" data-nick="'+p.nickname+'" data-team="'+team+'" data-map="'+mapIdx+'" value="'+(s.kills!=null?s.kills:'')+'" placeholder="0"></td>'+
-          '<td><input class="stats-input" type="number" min="0" data-field="deaths" data-nick="'+p.nickname+'" data-team="'+team+'" data-map="'+mapIdx+'" value="'+(s.deaths!=null?s.deaths:'')+'" placeholder="0"></td>'+
-          '<td><input class="stats-input" type="number" min="0" step="0.1" data-field="adr" data-nick="'+p.nickname+'" data-team="'+team+'" data-map="'+mapIdx+'" value="'+(s.adr!=null?s.adr:'')+'" placeholder="0"></td>'+
-          '<td><input class="stats-input" type="number" min="0" step="0.01" data-field="rating" data-nick="'+p.nickname+'" data-team="'+team+'" data-map="'+mapIdx+'" value="'+(s.rating!=null?s.rating:'')+'" placeholder="0.00"></td>'+
-          '</tr>';
-      }).join('');
-      return '<table class="stats-table"><thead><tr><th>Гравець</th><th>Kills</th><th>Deaths</th><th>ADR</th><th>Rating</th></tr></thead><tbody>'+rows+'</tbody></table>';
-    }
-
-    function updateWinnerBadge(mapIdx) {
-      const body = document.getElementById('resultBody');
-      const mapDiv = body.querySelector('[data-map-idx="'+mapIdx+'"]');
-      if(!mapDiv) return;
-      const sA = parseInt(mapDiv.querySelector('[data-score="A"]').value)||0;
-      const sB = parseInt(mapDiv.querySelector('[data-score="B"]').value)||0;
-      const badge = document.getElementById('winnerBadge'+mapIdx);
-      if(!badge) return;
-      if(sA>sB){ badge.textContent='Команда A'; badge.className='score-winner-badge a'; }
-      else if(sB>sA){ badge.textContent='Команда B'; badge.className='score-winner-badge b'; }
-      else { badge.textContent=''; badge.className='score-winner-badge'; }
-    }
-
-    function collectCurrentValues() {
-      const result={};
-      document.querySelectorAll('.map-content').forEach(div=>{
-        const idx=parseInt(div.dataset.mapIdx);
-        const sel=div.querySelector('.map-selector');
-        const sA=div.querySelector('[data-score="A"]');
-        const sB=div.querySelector('[data-score="B"]');
-        const playersA={}, playersB={};
-        div.querySelectorAll('.stats-input').forEach(inp=>{
-          const nick=inp.dataset.nick, field=inp.dataset.field, team=inp.dataset.team;
-          if(!nick) return;
-          const target=team==='A'?playersA:playersB;
-          if(!target[nick]) target[nick]={};
-          const v=inp.value.trim(); target[nick][field]=v!==''?parseFloat(v):null;
-        });
-        result[idx]={
-          map: sel?sel.value:MAP_POOL[0],
-          scoreA: sA?sA.value:'',
-          scoreB: sB?sB.value:'',
-          playersA, playersB
-        };
-      });
-      return result;
-    }
-
     function checkSaveBtn() {
-      const vals=collectCurrentValues();
-      let allFilled=true;
-      for(let i=0;i<mapCount;i++){
-        const v=vals[i];
-        if(!v){allFilled=false;break;}
-        if(v.scoreA===''||v.scoreB===''){allFilled=false;break;}
-        const sA=parseInt(v.scoreA), sB=parseInt(v.scoreB);
-        if(isNaN(sA)||isNaN(sB)||sA===sB){allFilled=false;break;} // must have a winner
-        const {matchData}=currentResultMatch;
-        for(const p of (matchData.teamA||[])){
-          const s=v.playersA[p.nickname]||{};
-          if(s.kills==null||s.deaths==null||s.adr==null||s.rating==null){allFilled=false;break;}
-        }
-        if(!allFilled) break;
-        for(const p of (matchData.teamB||[])){
-          const s=v.playersB[p.nickname]||{};
-          if(s.kills==null||s.deaths==null||s.adr==null||s.rating==null){allFilled=false;break;}
-        }
-        if(!allFilled) break;
+      let ok = mapCount > 0;
+      for (let i = 0; i < mapCount; i++) {
+        const r = mapResults[i];
+        if (!r || r.unmatched.length || r.winner == null || r.gA == null || r.gB == null || r.gA === r.gB) { ok = false; break; }
       }
-      document.getElementById('resultSaveBtn').disabled=!allFilled;
+      document.getElementById('resultSaveBtn').disabled = !ok;
     }
 
     /* ── Save result ── */
     document.getElementById('resultSaveBtn').addEventListener('click', async () => {
       const {matchData, matchId, isLocal} = currentResultMatch;
-      const vals = collectCurrentValues();
-
-      // Build maps array
+      // Build maps array from the uploaded result files
       const maps=[];
       for(let i=0;i<mapCount;i++){
-        const v=vals[i];
-        const sA=parseInt(v.scoreA), sB=parseInt(v.scoreB);
-        const winner=sA>sB?'A':'B';
-        const playersA=(matchData.teamA||[]).map(p=>({...p,...(v.playersA[p.nickname]||{})}));
-        const playersB=(matchData.teamB||[]).map(p=>({...p,...(v.playersB[p.nickname]||{})}));
-        maps.push({map:v.map, scoreA:sA, scoreB:sB, winner, playersA, playersB});
+        const r=mapResults[i];
+        const stat=nick=>r.statsByNick[norm(nick)]||{};
+        const mp=p=>({...p, kills:stat(p.nickname).kills, deaths:stat(p.nickname).deaths, adr:stat(p.nickname).adr, rating:stat(p.nickname).rating, kast:stat(p.nickname).kast});
+        maps.push({map:r.map, scoreA:r.scoreA, scoreB:r.scoreB, winner:r.winner, playersA:(matchData.teamA||[]).map(mp), playersB:(matchData.teamB||[]).map(mp)});
       }
 
       // Calculate Elo changes per player across all maps
