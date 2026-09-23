@@ -556,6 +556,13 @@
     // ranks: 1->+5, 2->+4, 3->+3, 4->+2, 5->+1, 6->-1, 7->-2, 8->-3, 9->-4, 10->-5
     const RATING_MAP = [5,4,3,2,1,-1,-2,-3,-4,-5];
     const LS_KEY = 'cs_elo_local_matches';
+    // Form = average of a player's last 5 recorded map ratings. Needs at least 5 or it's null (shown as "-").
+    // History entries are tagged with the matchId that added them, so deleting a match can cleanly undo its effect.
+    function computeForm(history) {
+      if (!Array.isArray(history) || history.length < 5) return null;
+      const last5 = history.slice(-5);
+      return Math.round((last5.reduce((s,e)=>s+e.rating,0)/5)*100)/100;
+    }
 
     // Game icons (custom, not the official Valve logos). White stroke for the accent-coloured logo tile.
     const ICON_CS = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" style="display:block"><circle cx="12" cy="12" r="7"/><line x1="12" y1="1" x2="12" y2="4.5"/><line x1="12" y1="19.5" x2="12" y2="23"/><line x1="1" y1="12" x2="4.5" y2="12"/><line x1="19.5" y1="12" x2="23" y2="12"/><circle cx="12" cy="12" r="1.6" fill="#fff" stroke="none"/></svg>';
@@ -1026,10 +1033,14 @@
           const newGames=dbPlayer.games-maps.length;
           const newWins=dbPlayer.wins-wins;
           const newLosses=dbPlayer.losses-losses;
+          const existingHistory=Array.isArray(dbPlayer.ratingHistory)?dbPlayer.ratingHistory:[];
+          const newHistory=existingHistory.filter(e=>e.matchId!==matchId);
+          const newForm=computeForm(newHistory);
           try {
-            await updateDoc(doc(db,'players',dbPlayer._id),{elo:newElo, games:newGames, wins:newWins, losses:newLosses});
+            await updateDoc(doc(db,'players',dbPlayer._id),{elo:newElo, games:newGames, wins:newWins, losses:newLosses, ratingHistory:newHistory, form:newForm});
             dbPlayer.elo=newElo; dbPlayer.games=newGames; dbPlayer.wins=newWins; dbPlayer.losses=newLosses;
             dbPlayer.winrate=newGames>0?Math.round((newWins/newGames)*100):0;
+            dbPlayer.ratingHistory=newHistory; dbPlayer.form=newForm;
           } catch(e){ console.error('Revert failed',p.nickname,e); }
         }));
       }
@@ -1276,6 +1287,19 @@
         maps.push({map:r.map, scoreA:r.scoreA, scoreB:r.scoreB, winner:r.winner, playersA:(matchData.teamA||[]).map(mp), playersB:(matchData.teamB||[]).map(mp)});
       }
 
+      // Ratings this match adds to each player's form history — one entry per map they played
+      const ratingsAdded={};
+      {
+        const allPlayers=[...(matchData.teamA||[]),...(matchData.teamB||[])];
+        allPlayers.forEach(p=>{ ratingsAdded[p.nickname]=[]; });
+        maps.forEach(map=>{
+          [...map.playersA,...map.playersB].forEach(p=>{
+            const r=parseFloat(p.rating);
+            if(!isNaN(r)) ratingsAdded[p.nickname].push(r);
+          });
+        });
+      }
+
       // Calculate Elo changes per player across all maps
       const eloDeltas={};
       const allPlayers=[...(matchData.teamA||[]),...(matchData.teamB||[])];
@@ -1328,10 +1352,14 @@
           const newGames=dbPlayer.games+gamesAdded[p.nickname];
           const newWins=dbPlayer.wins+winsAdded[p.nickname];
           const newLosses=dbPlayer.losses+lossesAdded[p.nickname];
+          const existingHistory=Array.isArray(dbPlayer.ratingHistory)?dbPlayer.ratingHistory:[];
+          const newHistory=[...existingHistory, ...(ratingsAdded[p.nickname]||[]).map(r=>({matchId, rating:r}))];
+          const newForm=computeForm(newHistory);
           try {
-            await updateDoc(doc(db,'players',dbPlayer._id),{elo:newElo, games:newGames, wins:newWins, losses:newLosses});
+            await updateDoc(doc(db,'players',dbPlayer._id),{elo:newElo, games:newGames, wins:newWins, losses:newLosses, ratingHistory:newHistory, form:newForm});
             dbPlayer.elo=newElo; dbPlayer.games=newGames; dbPlayer.wins=newWins; dbPlayer.losses=newLosses;
             dbPlayer.winrate=newGames>0?Math.round((newWins/newGames)*100):0;
+            dbPlayer.ratingHistory=newHistory; dbPlayer.form=newForm;
           } catch(e) { console.error('Player update failed',p.nickname,e); }
         });
         await Promise.all(updatePromises);
