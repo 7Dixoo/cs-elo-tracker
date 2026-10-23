@@ -16,7 +16,7 @@
       --accent: var(--teal); --accent-light: var(--teal-light);
     }
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-
+ 
     header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; transition: border-color 0.3s; }
     body.dota-mode header { border-bottom-color: var(--dota-red); }
     .header-left { display: flex; align-items: center; gap: 16px; }
@@ -40,7 +40,7 @@
     .admin-pill { background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 99px; letter-spacing: 0.4px; transition: background 0.3s; }
     .logout-btn { background: none; border: 1px solid var(--border); color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; padding: 5px 12px; border-radius: var(--radius-md); cursor: pointer; transition: background 0.15s, color 0.15s; }
     .logout-btn:hover { background: #fdeee9; color: var(--coral); border-color: var(--coral); }
-
+ 
     body.dota-mode { --accent: var(--dota-red); --accent-light: var(--dota-red-light); }
     body.dota-mode .elo-value { color: var(--dota-red); }
     body.dota-mode .avatar { background: var(--dota-red-light); color: var(--dota-red); }
@@ -48,7 +48,7 @@
     body.dota-mode .spinner { border-top-color: var(--dota-red); }
     body.dota-mode .winrate-bar-fill { background: var(--dota-red); }
     body.dota-mode .wins-text { color: var(--dota-red); }
-
+ 
     #loginScreen { display: none; min-height: 100vh; align-items: center; justify-content: center; background: var(--bg); }
     #loginScreen.visible { display: flex; }
     .login-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px 36px; width: 100%; max-width: 380px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); }
@@ -66,7 +66,7 @@
     .login-back { text-align: center; margin-top: 16px; }
     .login-back a { font-size: 13px; color: var(--muted); cursor: pointer; text-decoration: underline; }
     .login-back a:hover { color: var(--teal); }
-
+ 
     #appShell { display: none; }
     #appShell.visible { display: block; }
     #csSection { display: block; } #dotaSection { display: none; }
@@ -75,7 +75,7 @@
     main { max-width: 960px; margin: 0 auto; padding: 32px 24px 80px; }
     .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
     .page-title { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 700; letter-spacing: -0.5px; }
-
+ 
     .btn { display: inline-flex; align-items: center; gap: 6px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; padding: 10px 20px; border-radius: var(--radius-md); border: none; cursor: pointer; transition: opacity 0.15s, background 0.15s; }
     .btn:disabled { opacity: 0.38; cursor: not-allowed; }
     .btn-primary { background: var(--accent); color: #fff; }
@@ -84,7 +84,7 @@
     .btn-cancel:hover:not(:disabled) { background: var(--bg); }
     .btn-sm { padding: 6px 12px; font-size: 13px; }
     .btn-danger { background: var(--coral); color: #fff; }
-
+ 
     .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
     table { width: 100%; border-collapse: collapse; font-size: 14px; }
     thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
@@ -115,7 +115,7 @@
     .state-row td { text-align: center; padding: 60px 16px; color: var(--muted); }
     .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.7s linear infinite; margin-bottom: 12px; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
+ 
     /* ── Match cards ── */
     .matches-empty { text-align: center; padding: 80px 24px; color: var(--muted); }
     .matches-empty-icon { font-size: 48px; margin-bottom: 16px; }
@@ -138,7 +138,7 @@
     .match-player-row { font-size: 13px; padding: 5px 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); gap: 8px; }
     .match-player-row:last-child { border-bottom: none; }
     .match-player-stats { display: flex; gap: 10px; color: var(--muted); font-size: 12px; flex-shrink: 0; }
-
+ 
     /* ── Trash / confirm ── */
     .trash-btn { background: none; border: 1px solid var(--border); cursor: pointer; color: var(--muted); padding: 0; border-radius: 8px; width: 34px; height: 34px; transition: color 0.15s, background 0.15s, border-color 0.15s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .trash-btn:hover { color: var(--coral); background: #fdeee9; border-color: var(--coral); }
@@ -149,7 +149,7 @@
     .confirm-overlay.open .confirm-modal { transform: scale(1); }
     .confirm-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; margin-bottom: 24px; }
     .confirm-actions { display: flex; gap: 10px; justify-content: flex-end; }
-
+ 
     /* ── Match creation modal ── */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: flex-end; justify-content: center; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.22s ease; }
     .modal-overlay.open { opacity: 1; pointer-events: all; }
@@ -162,7 +162,7 @@
     .modal-body { flex: 1; overflow-y: auto; padding: 20px 24px; min-height: 0; }
     .modal-footer { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 24px; border-top: 1px solid var(--border); flex-shrink: 0; }
     .modal-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin-bottom: 10px; }
-
+ 
     /* Match creation step 1 */
     .select-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .select-col { display: flex; flex-direction: column; min-width: 0; min-height: 420px; }
@@ -194,7 +194,7 @@
     .selected-item-meta { font-size: 11px; color: var(--muted); display: flex; gap: 6px; flex-shrink: 0; }
     .remove-btn { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 18px; line-height: 1; padding: 2px 4px; border-radius: 4px; transition: color 0.15s, background 0.15s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .remove-btn:hover { color: var(--coral); background: #fdeee9; }
-
+ 
     /* Teams step */
     .teams-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .team-block { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
@@ -215,23 +215,23 @@
     .swap-btn.selected { background: var(--amber); border-color: var(--amber); color: #fff; }
     .swap-btn.target { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
     .swap-btn:disabled { opacity: 0.25; cursor: not-allowed; }
-
+ 
     /* ── Result modal ── */
     .result-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: flex-end; justify-content: center; z-index: 250; opacity: 0; pointer-events: none; transition: opacity 0.22s; }
     .result-modal-overlay.open { opacity: 1; pointer-events: all; }
     .result-modal { background: var(--surface); border-radius: var(--radius-lg) var(--radius-lg) 0 0; width: 100%; max-width: 960px; max-height: 92vh; display: flex; flex-direction: column; transform: translateY(32px); transition: transform 0.26s cubic-bezier(0.32,0.72,0,1); overflow: hidden; }
     .result-modal-overlay.open .result-modal { transform: translateY(0); }
-
+ 
     /* Map tabs */
     .map-tabs-bar { display: flex; align-items: center; gap: 8px; padding: 16px 24px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; overflow-x: auto; }
     .map-tab { padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--muted); border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; transition: color 0.15s, border-color 0.15s; }
     .map-tab.active { color: var(--teal); border-bottom-color: var(--teal); }
     .map-tab-actions { margin-left: auto; display: flex; gap: 6px; flex-shrink: 0; padding-bottom: 8px; }
-
+ 
     /* Map content */
     .map-content { display: none; }
     .map-content.active { display: block; }
-
+ 
     /* Map header: selector + score */
     .map-header { display: flex; align-items: center; gap: 16px; padding: 16px 24px; background: var(--bg); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
     .map-selector { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-md); font-family: 'DM Sans', sans-serif; font-size: 14px; background: var(--surface); color: var(--text); outline: none; cursor: pointer; }
@@ -244,7 +244,7 @@
     .score-winner-badge { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 99px; }
     .score-winner-badge.a { background: var(--teal-light); color: var(--teal); }
     .score-winner-badge.b { background: #fff8ec; color: var(--amber); }
-
+ 
     /* Player stats table inside result modal */
     .stats-section { padding: 16px 24px; }
     .stats-team-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; margin-top: 16px; }
@@ -269,13 +269,19 @@
     .result-score .rscore { color: var(--muted); } .result-score .rscore.win { color: var(--teal); }
     .result-winner { font-size: 13px; font-weight: 600; color: var(--muted); }
     .result-head .btn-sm { margin-left: auto; }
-
+ 
+    /* CS player add/edit */
+    .icon-btn { background: none; border: 1px solid var(--border); cursor: pointer; color: var(--muted); padding: 0; border-radius: 8px; width: 34px; height: 34px; transition: color 0.15s, background 0.15s, border-color 0.15s; display: inline-flex; align-items: center; justify-content: center; }
+    .icon-btn:hover { color: var(--accent); background: var(--accent-light); border-color: var(--accent); }
+    .icon-btn svg { display: block; pointer-events: none; width: 16px; height: 16px; }
+    .field-error { font-size: 12px; color: var(--coral); margin-top: 6px; min-height: 16px; }
+ 
     /* Dota empty */
     .dota-empty { text-align: center; padding: 80px 24px; color: var(--muted); }
     .dota-empty-icon { font-size: 48px; margin-bottom: 16px; }
     .dota-empty-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
     .dota-empty-sub { font-size: 14px; }
-
+ 
     @media (max-width: 640px) {
       .hide-mobile { display: none; }
       th, td { padding: 10px 8px; }
@@ -294,7 +300,7 @@
   </style>
 </head>
 <body>
-
+ 
   <!-- Login -->
   <div id="loginScreen">
     <div class="login-card">
@@ -308,7 +314,7 @@
       <div class="login-back"><a id="backToApp">&#x2190; Повернутись до застосунку</a></div>
     </div>
   </div>
-
+ 
   <!-- App -->
   <div id="appShell">
     <header>
@@ -339,12 +345,12 @@
         </div>
       </nav>
     </header>
-
+ 
     <main>
       <div id="csSection">
         <!-- CS Players -->
         <div class="page active" id="page-cs-players">
-          <div class="page-header"><h1 class="page-title">Таблиця гравців</h1></div>
+          <div class="page-header"><h1 class="page-title">Таблиця гравців</h1><button class="btn btn-primary" id="addCsPlayerBtn" style="display:none">+ Додати гравця</button></div>
           <div class="table-wrap">
             <table>
               <thead><tr>
@@ -355,8 +361,9 @@
                 <th data-col="games" data-table="cs" class="right hide-mobile">Матчі <span class="sort-arrow">&#x21D5;</span></th>
                 <th data-col="wins" data-table="cs" class="right hide-mobile">Перемоги <span class="sort-arrow">&#x21D5;</span></th>
                 <th data-col="winrate" data-table="cs" class="right">Вінрейт <span class="sort-arrow">&#x21D5;</span></th>
+                <th id="csActionsTh" style="display:none;width:1%"></th>
               </tr></thead>
-              <tbody id="csTbody"><tr class="state-row"><td colspan="7"><div><div class="spinner"></div></div><div>Завантаження...</div></td></tr></tbody>
+              <tbody id="csTbody"><tr class="state-row"><td colspan="8"><div><div class="spinner"></div></div><div>Завантаження...</div></td></tr></tbody>
             </table>
           </div>
         </div>
@@ -369,7 +376,7 @@
           <div id="matchesList"></div>
         </div>
       </div>
-
+ 
       <div id="dotaSection">
         <!-- Dota Players -->
         <div class="page active" id="page-dota-players">
@@ -399,7 +406,7 @@
       </div>
     </main>
   </div>
-
+ 
   <!-- Confirm delete -->
   <div class="confirm-overlay" id="confirmOverlay">
     <div class="confirm-modal">
@@ -410,7 +417,7 @@
       </div>
     </div>
   </div>
-
+ 
   <!-- Match creation modal -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
@@ -450,7 +457,7 @@
       </div>
     </div>
   </div>
-
+ 
   <!-- Dota match creation modal -->
   <div class="modal-overlay" id="dotaModalOverlay">
     <div class="modal">
@@ -490,7 +497,7 @@
       </div>
     </div>
   </div>
-
+ 
   <!-- Result modal -->
   <div class="result-modal-overlay" id="resultModalOverlay">
     <div class="result-modal">
@@ -514,7 +521,24 @@
       </div>
     </div>
   </div>
-
+ 
+  <!-- CS: add / edit player modal -->
+  <div class="modal-overlay" id="csPlayerOverlay">
+    <div class="modal" style="max-width:480px">
+      <div class="modal-header">
+        <span class="modal-title" id="csPlayerTitle">Додати гравця</span>
+        <button class="modal-close" id="csPlayerCloseBtn">&#x00D7;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-field"><label class="form-label">Нікнейм</label><input class="form-input" id="csPlayerNick" type="text" autocomplete="off" /><div class="field-error" id="csPlayerError"></div></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-cancel" id="csPlayerCancelBtn">Скасувати</button>
+        <button class="btn btn-primary" id="csPlayerSaveBtn" disabled>Підтвердити</button>
+      </div>
+    </div>
+  </div>
+ 
   <!-- Dota: add player modal -->
   <div class="modal-overlay" id="dotaPlayerOverlay">
     <div class="modal" style="max-width:480px">
@@ -532,14 +556,14 @@
       </div>
     </div>
   </div>
-
+ 
   <script type="module">
     import { initializeApp }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, query, orderBy }
                               from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
                               from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
+ 
     const firebaseConfig = {
       apiKey: "AIzaSyAnl2eDvVhtOW7OpqPY_6OB9tx83qEl2f0",
       authDomain: "cs-elo-tracker.firebaseapp.com",
@@ -551,11 +575,30 @@
     const app = initializeApp(firebaseConfig);
     const db  = getFirestore(app);
     const auth = getAuth(app);
-
+ 
     const MAP_POOL = ['Dust 2','Mirage','Inferno','Nuke','Overpass','Ancient','Anubis'];
     // ranks: 1->+5, 2->+4, 3->+3, 4->+2, 5->+1, 6->-1, 7->-2, 8->-3, 9->-4, 10->-5
     const RATING_MAP = [5,4,3,2,1,-1,-2,-3,-4,-5];
     const LS_KEY = 'cs_elo_local_matches';
+    // Players are identified by their Firestore document id (stored in matches as playerId).
+    // Older matches without playerId fall back to matching by nickname.
+    function findCsPlayer(entry) {
+      if (entry.playerId) {
+        const byId = allCsPlayers.find(cp => cp._id === entry.playerId);
+        if (byId) return byId;
+      }
+      return allCsPlayers.find(cp => cp.nickname === entry.nickname);
+    }
+    // Refresh nicknames inside a match from the live player list, so renamed players show their current name.
+    function syncMatchNicknames(m) {
+      ['teamA','teamB'].forEach(k => (m[k]||[]).forEach(p => {
+        if (!p.playerId) return;
+        const cur = allCsPlayers.find(cp => cp._id === p.playerId);
+        if (cur) p.nickname = cur.nickname;
+      }));
+      return m;
+    }
+ 
     // Form = average of a player's last 5 recorded map ratings. Needs at least 5 or it's null (shown as "-").
     // History entries are tagged with the matchId that added them, so deleting a match can cleanly undo its effect.
     function computeForm(history) {
@@ -563,11 +606,11 @@
       const last5 = history.slice(-5);
       return Math.round((last5.reduce((s,e)=>s+e.rating,0)/5)*100)/100;
     }
-
+ 
     // Game icons (custom, not the official Valve logos). White stroke for the accent-coloured logo tile.
     const ICON_CS = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" style="display:block"><circle cx="12" cy="12" r="7"/><line x1="12" y1="1" x2="12" y2="4.5"/><line x1="12" y1="19.5" x2="12" y2="23"/><line x1="1" y1="12" x2="4.5" y2="12"/><line x1="19.5" y1="12" x2="23" y2="12"/><circle cx="12" cy="12" r="1.6" fill="#fff" stroke="none"/></svg>';
     const ICON_DOTA = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" y1="14" x2="9" y2="18"/><line x1="7" y1="17" x2="4" y2="20"/><line x1="3" y1="19" x2="5" y2="21"/></svg>';
-
+ 
     let allCsPlayers = [], allDotaPlayers = [];
     let selectedPlayers = [], teamA = [], teamB = [];
     let swapSource = null;
@@ -575,13 +618,14 @@
     let csSortCol = 'elo', csSortDir = 'desc';
     let dotaSortCol = 'mmr', dotaSortDir = 'desc';
     let isAdmin = false, isDota = false;
-
+    let csPlayersLoaded = false;
+ 
     // Result modal state
     let currentResultMatch = null; // { matchData, matchId, isLocal }
     let mapCount = 1;
     let mapResults = [];
     let activeMapIdx = 0;
-
+ 
     /* ═══ AUTH ═══ */
     onAuthStateChanged(auth, user => {
       isAdmin = !!user;
@@ -592,6 +636,9 @@
       document.getElementById('adminBadge').style.display     = isAdmin ? 'flex' : 'none';
       document.getElementById('adminLoginLink').style.display = isAdmin ? 'none' : 'inline-block';
       document.getElementById('gameSwitcher').classList.toggle('visible', isAdmin);
+      document.getElementById('addCsPlayerBtn').style.display = isAdmin ? '' : 'none';
+      document.getElementById('csActionsTh').style.display = isAdmin ? '' : 'none';
+      if (csPlayersLoaded) renderCsTable();
       if (!isAdmin && isDota) switchGame(false);
     }
     document.getElementById('adminLoginLink').addEventListener('click', e => {
@@ -625,7 +672,7 @@
       document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginBtn').click(); });
     });
     document.getElementById('logoutBtn').addEventListener('click', async () => { await signOut(auth); updateAdminUI(); });
-
+ 
     /* ═══ GAME SWITCHER ═══ */
     document.getElementById('switchTrack').addEventListener('click', () => { if (isAdmin) switchGame(!isDota); });
     function switchGame(toDota) {
@@ -652,7 +699,7 @@
         document.querySelector('[data-page="cs-players"]').classList.add('active');
       }
     }
-
+ 
     /* ═══ NAV ═══ */
     document.querySelectorAll('.nav-link[data-page]').forEach(link => {
       link.addEventListener('click', e => {
@@ -668,14 +715,15 @@
         if (page === 'dota-matches') renderDotaMatches();
       });
     });
-
+ 
     /* ═══ CS PLAYERS ═══ */
     async function loadCsPlayers() {
       try {
         const snap = await getDocs(collection(db, 'players'));
         allCsPlayers = snap.docs.map(d => { const p = d.data(); p.winrate = p.games > 0 ? Math.round((p.wins/p.games)*100) : 0; p._id = d.id; return p; });
+        csPlayersLoaded = true;
         renderCsTable();
-      } catch(e) { document.getElementById('csTbody').innerHTML = '<tr class="state-row"><td colspan="7">Помилка завантаження.</td></tr>'; }
+      } catch(e) { document.getElementById('csTbody').innerHTML = '<tr class="state-row"><td colspan="8">Помилка завантаження.</td></tr>'; }
     }
     function renderCsTable() {
       const sorted = [...allCsPlayers].sort((a,b) => {
@@ -688,8 +736,9 @@
         const rc=rank<=3?'rank-'+rank:'', ini=p.nickname.slice(0,2).toUpperCase();
         const wr=p.winrate, wrc=wr>=55?'':wr>=45?'mid':'low';
         const fd=p.form!=null?p.form.toFixed(2):'&#x2014;', fc=p.form!=null?'var(--text)':'var(--muted)';
-        return '<tr><td class="rank center '+rc+'">'+rl+'</td><td><div class="player-cell"><div class="avatar">'+ini+'</div><div class="player-name">'+p.nickname+'</div></div></td><td class="right"><span class="elo-value">'+p.elo+'</span></td><td class="right hide-mobile" style="font-weight:600;color:'+fc+'">'+fd+'</td><td class="right hide-mobile">'+p.games+'</td><td class="right hide-mobile"><span class="wins-text">'+p.wins+'</span> <span style="color:var(--border)">/</span> <span class="losses-text">'+p.losses+'</span></td><td><div class="winrate-cell"><div class="winrate-bar-track"><div class="winrate-bar-fill '+wrc+'" style="width:'+wr+'%"></div></div><span class="winrate-pct">'+wr+'%</span></div></td></tr>';
+        return '<tr><td class="rank center '+rc+'">'+rl+'</td><td><div class="player-cell"><div class="avatar">'+ini+'</div><div class="player-name">'+p.nickname+'</div></div></td><td class="right"><span class="elo-value">'+p.elo+'</span></td><td class="right hide-mobile" style="font-weight:600;color:'+fc+'">'+fd+'</td><td class="right hide-mobile">'+p.games+'</td><td class="right hide-mobile"><span class="wins-text">'+p.wins+'</span> <span style="color:var(--border)">/</span> <span class="losses-text">'+p.losses+'</span></td><td><div class="winrate-cell"><div class="winrate-bar-track"><div class="winrate-bar-fill '+wrc+'" style="width:'+wr+'%"></div></div><span class="winrate-pct">'+wr+'%</span></div></td>'+(isAdmin?'<td class="center"><button class="icon-btn edit-player-btn" data-id="'+p._id+'" title="Редагувати"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button></td>':'')+'</tr>';
       }).join('');
+      document.querySelectorAll('.edit-player-btn').forEach(btn=>btn.addEventListener('click',()=>openCsPlayerModal(btn.dataset.id)));
       document.querySelectorAll('th[data-table="cs"]').forEach(th => {
         th.classList.toggle('sorted', th.dataset.col===csSortCol);
         th.querySelector('.sort-arrow').innerHTML = th.dataset.col===csSortCol?(csSortDir==='asc'?'&#x2191;':'&#x2193;'):'&#x21D5;';
@@ -703,7 +752,76 @@
         renderCsTable();
       });
     });
-
+ 
+    /* ═══ CS: ADD / EDIT PLAYER ═══ */
+    let csPlayerMode = 'add', csPlayerEditId = null, csPlayerSaving = false;
+    const nickKey = v => String(v||'').trim().toLowerCase();
+    function validateCsNick() {
+      const raw = document.getElementById('csPlayerNick').value.trim();
+      const errEl = document.getElementById('csPlayerError');
+      const btn = document.getElementById('csPlayerSaveBtn');
+      let err = '';
+      if (raw && /[<>"]/.test(raw)) err = 'Нікнейм не може містити символи < > "';
+      else if (raw && allCsPlayers.some(p => nickKey(p.nickname) === nickKey(raw) && p._id !== csPlayerEditId)) err = 'Гравець з таким нікнеймом уже існує';
+      errEl.textContent = err;
+      let ok = raw !== '' && err === '';
+      if (ok && csPlayerMode === 'edit') {
+        const cur = allCsPlayers.find(p => p._id === csPlayerEditId);
+        if (cur && cur.nickname === raw) ok = false; // nothing changed
+      }
+      btn.disabled = !ok || csPlayerSaving;
+    }
+    function openCsPlayerModal(editId) {
+      csPlayerMode = editId ? 'edit' : 'add';
+      csPlayerEditId = editId || null;
+      csPlayerSaving = false;
+      const cur = editId ? allCsPlayers.find(p => p._id === editId) : null;
+      document.getElementById('csPlayerTitle').textContent = editId ? 'Редагувати гравця' : 'Додати гравця';
+      const input = document.getElementById('csPlayerNick');
+      input.value = cur ? cur.nickname : '';
+      document.getElementById('csPlayerError').textContent = '';
+      document.getElementById('csPlayerSaveBtn').disabled = true;
+      document.getElementById('csPlayerOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => { input.focus(); input.select(); }, 50);
+    }
+    function closeCsPlayerModal() {
+      document.getElementById('csPlayerOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('addCsPlayerBtn').addEventListener('click', () => { if (isAdmin) openCsPlayerModal(null); });
+    document.getElementById('csPlayerCloseBtn').addEventListener('click', closeCsPlayerModal);
+    document.getElementById('csPlayerCancelBtn').addEventListener('click', closeCsPlayerModal);
+    document.getElementById('csPlayerOverlay').addEventListener('click', e => { if (e.target === document.getElementById('csPlayerOverlay')) closeCsPlayerModal(); });
+    document.getElementById('csPlayerNick').addEventListener('input', validateCsNick);
+    document.getElementById('csPlayerNick').addEventListener('keydown', e => { if (e.key === 'Enter' && !document.getElementById('csPlayerSaveBtn').disabled) document.getElementById('csPlayerSaveBtn').click(); });
+    document.getElementById('csPlayerSaveBtn').addEventListener('click', async () => {
+      if (!isAdmin || csPlayerSaving) return;
+      const nick = document.getElementById('csPlayerNick').value.trim();
+      if (!nick) return;
+      csPlayerSaving = true;
+      document.getElementById('csPlayerSaveBtn').disabled = true;
+      try {
+        if (csPlayerMode === 'add') {
+          const data = { nickname: nick, elo: 1000, games: 0, wins: 0, losses: 0, form: null, ratingHistory: [] };
+          const ref = await addDoc(collection(db, 'players'), data);
+          allCsPlayers.push({ ...data, winrate: 0, _id: ref.id });
+        } else {
+          await updateDoc(doc(db, 'players', csPlayerEditId), { nickname: nick });
+          const cur = allCsPlayers.find(p => p._id === csPlayerEditId);
+          if (cur) cur.nickname = nick;
+        }
+        closeCsPlayerModal();
+        renderCsTable();
+      } catch (e) {
+        console.error('Player save failed', e);
+        document.getElementById('csPlayerError').textContent = 'Не вдалося зберегти. Спробуйте ще раз.';
+      } finally {
+        csPlayerSaving = false;
+        validateCsNick();
+      }
+    });
+ 
     /* ═══ DOTA PLAYERS ═══ */
     async function loadDotaPlayers() {
       const tbody = document.getElementById('dotaTbody');
@@ -722,7 +840,7 @@
       document.querySelectorAll('th[data-table="dota"]').forEach(th=>{th.classList.toggle('sorted',th.dataset.col===dotaSortCol);th.querySelector('.sort-arrow').innerHTML=th.dataset.col===dotaSortCol?(dotaSortDir==='asc'?'&#x2191;':'&#x2193;'):'&#x21D5;';});
     }
     document.querySelectorAll('th[data-table="dota"]').forEach(th=>{th.addEventListener('click',()=>{const col=th.dataset.col;if(dotaSortCol===col)dotaSortDir=dotaSortDir==='asc'?'desc':'asc';else{dotaSortCol=col;dotaSortDir=col==='nickname'?'asc':'desc';}renderDotaTable();});});
-
+ 
     /* ═══ DOTA ADD PLAYER ═══ */
     function checkDotaPlayerBtn(){
       const nick=document.getElementById('dotaNick').value.trim();
@@ -756,12 +874,12 @@
       } catch(e){ console.error('Add Dota player failed',e); }
       finally { btn.textContent='Додати'; checkDotaPlayerBtn(); }
     });
-
+ 
     /* ═══ DOTA MATCH CREATION ═══ */
     function avgMmr(team){ return team.length?Math.round(team.reduce((s,p)=>s+p.mmr,0)/team.length):0; }
-
+ 
     window.switchDotaMobileTab=function(tab){ const isPool=tab==='pool'; document.getElementById('dotaTabPool').classList.toggle('active',isPool); document.getElementById('dotaTabSelected').classList.toggle('active',!isPool); document.getElementById('dotaColPool').classList.toggle('tab-visible',isPool); document.getElementById('dotaColSelected').classList.toggle('tab-visible',!isPool); };
-
+ 
     function openDotaModal(){
       dotaSelectedPlayers=[]; dotaSwapSource=null; dotaTeamA=[]; dotaTeamB=[];
       showDotaStep('select');
@@ -782,7 +900,7 @@
     document.getElementById('dotaModalCloseBtn').addEventListener('click', closeDotaModal);
     document.getElementById('dotaCancelBtn').addEventListener('click', closeDotaModal);
     document.getElementById('dotaModalOverlay').addEventListener('click', e=>{ if(e.target===document.getElementById('dotaModalOverlay')) closeDotaModal(); });
-
+ 
     document.getElementById('dotaSearchInput').addEventListener('input', e=>renderDotaPool(e.target.value.trim().toLowerCase()));
     function renderDotaPool(q){
       const full=dotaSelectedPlayers.length===10;
@@ -803,7 +921,7 @@
       list.querySelectorAll('.remove-btn').forEach(btn=>{ btn.addEventListener('click',()=>{ dotaSelectedPlayers=dotaSelectedPlayers.filter(p=>p.nickname!==btn.dataset.nick); syncDotaModalState(); }); });
     }
     function syncDotaModalState(){ renderDotaPool(document.getElementById('dotaSearchInput').value.trim().toLowerCase()); renderDotaSelected(); }
-
+ 
     document.getElementById('dotaConfirmBtn').addEventListener('click',()=>{ balanceDotaTeams(); dotaSwapSource=null; showDotaStep('teams'); renderDotaTeams(); });
     document.getElementById('dotaBackBtn').addEventListener('click',()=>{ dotaSwapSource=null; showDotaStep('select'); });
     // Split the 10 players into two teams of 5 with the smallest possible gap in
@@ -823,7 +941,7 @@
       dotaTeamA=[]; dotaTeamB=[];
       for(let i=0;i<10;i++) (bestMask&(1<<i) ? dotaTeamA : dotaTeamB).push(players[i]);
     }
-
+ 
     function renderDotaTeams(){ document.getElementById('dotaTeamsGrid').innerHTML=renderDotaTeamBlock('A',dotaTeamA)+renderDotaTeamBlock('B',dotaTeamB); attachDotaSwapListeners(); }
     function renderDotaTeamBlock(letter,team){
       const cls=letter==='A'?'team-a':'team-b', label=letter==='A'?'Команда A':'Команда B';
@@ -835,7 +953,7 @@
         btn.addEventListener('click',()=>{ const nick=btn.dataset.nick,team=btn.dataset.team,player=(team==='A'?dotaTeamA:dotaTeamB).find(p=>p.nickname===nick); if(!dotaSwapSource){dotaSwapSource={player,team};}else if(dotaSwapSource.player.nickname===nick){dotaSwapSource=null;}else if(dotaSwapSource.team!==team){const src=dotaSwapSource.team==='A'?dotaTeamA:dotaTeamB,dst=team==='A'?dotaTeamA:dotaTeamB,si=src.findIndex(p=>p.nickname===dotaSwapSource.player.nickname),di=dst.findIndex(p=>p.nickname===nick);[src[si],dst[di]]=[dst[di],src[si]];dotaSwapSource=null;}renderDotaTeams(); });
       });
     }
-
+ 
     document.getElementById('dotaSaveMatchBtn').addEventListener('click', async ()=>{
       const pack=p=>({nickname:p.nickname,mmr:p.mmr});
       const matchData={ teamA: dotaTeamA.map(pack), teamB: dotaTeamB.map(pack), createdAt:new Date(), finished:false };
@@ -849,7 +967,7 @@
       document.getElementById('page-dota-matches').classList.add('active');
       renderDotaMatches();
     });
-
+ 
     async function renderDotaMatches(){
       const container=document.getElementById('dotaMatchesList');
       container.innerHTML='<div style="text-align:center;padding:40px"><div class="spinner" style="display:inline-block"></div></div>';
@@ -869,7 +987,7 @@
           '</div></div>';
       }).join('');
     }
-
+ 
     /* ═══ MOBILE TAB ═══ */
     window.switchMobileTab = function(tab) {
       const isPool = tab==='pool';
@@ -878,7 +996,7 @@
       document.getElementById('colPool').classList.toggle('tab-visible',isPool);
       document.getElementById('colSelected').classList.toggle('tab-visible',!isPool);
     };
-
+ 
     /* ═══ MATCH CREATION MODAL ═══ */
     function openModal() {
       selectedPlayers=[]; swapSource=null; teamA=[]; teamB=[];
@@ -900,7 +1018,7 @@
       document.getElementById('footerSelect').style.display = step==='select'?'contents':'none';
       document.getElementById('footerTeams').style.display  = step==='teams'?'flex':'none';
     }
-
+ 
     /* Pool */
     document.getElementById('searchInput').addEventListener('input', e => renderPool(e.target.value.trim().toLowerCase()));
     function renderPool(q) {
@@ -928,7 +1046,7 @@
       list.querySelectorAll('.remove-btn').forEach(btn => { btn.addEventListener('click',()=>{ selectedPlayers=selectedPlayers.filter(p=>p.nickname!==btn.dataset.nick); syncModalState(); }); });
     }
     function syncModalState() { renderPool(document.getElementById('searchInput').value.trim().toLowerCase()); renderSelected(); }
-
+ 
     /* Balance */
     document.getElementById('confirmBtn').addEventListener('click',()=>{ balanceTeams(); swapSource=null; showStep('teams'); renderTeams(); });
     document.getElementById('backBtn').addEventListener('click',()=>{ swapSource=null; showStep('select'); });
@@ -956,7 +1074,7 @@
       teamA=[]; teamB=[];
       players.forEach((p,i)=>{ (bestSet.has(i)?teamA:teamB).push(p); });
     }
-
+ 
     /* Teams */
     function avgElo(team) { return team.length?Math.round(team.reduce((s,p)=>s+p.elo,0)/team.length):0; }
     function avgForm(team) { const w=(team||[]).filter(p=>p.form!=null); return w.length?(w.reduce((s,p)=>s+p.form,0)/w.length).toFixed(2):'&#x2014;'; }
@@ -971,12 +1089,12 @@
         btn.addEventListener('click',()=>{ const nick=btn.dataset.nick,team=btn.dataset.team,player=(team==='A'?teamA:teamB).find(p=>p.nickname===nick); if(!swapSource){swapSource={player,team};}else if(swapSource.player.nickname===nick){swapSource=null;}else if(swapSource.team!==team){const src=swapSource.team==='A'?teamA:teamB,dst=team==='A'?teamA:teamB,si=src.findIndex(p=>p.nickname===swapSource.player.nickname),di=dst.findIndex(p=>p.nickname===nick);[src[si],dst[di]]=[dst[di],src[si]];swapSource=null;}renderTeams(); });
       });
     }
-
+ 
     /* Save match */
     document.getElementById('saveMatchBtn').addEventListener('click', async () => {
       const matchData = {
-        teamA: teamA.map(p=>({nickname:p.nickname,elo:p.elo,winrate:p.winrate,form:p.form??null})),
-        teamB: teamB.map(p=>({nickname:p.nickname,elo:p.elo,winrate:p.winrate,form:p.form??null})),
+        teamA: teamA.map(p=>({playerId:p._id,nickname:p.nickname,elo:p.elo,winrate:p.winrate,form:p.form??null})),
+        teamB: teamB.map(p=>({playerId:p._id,nickname:p.nickname,elo:p.elo,winrate:p.winrate,form:p.form??null})),
         createdAt: new Date(), finished: false
       };
       if(isAdmin) {
@@ -994,11 +1112,11 @@
       document.getElementById('page-cs-matches').classList.add('active');
       renderMatches();
     });
-
+ 
     /* ═══ LOCAL STORAGE ═══ */
     function getLocalMatches() { try { return JSON.parse(localStorage.getItem(LS_KEY)||'[]'); } catch { return []; } }
     function saveLocalMatches(arr) { localStorage.setItem(LS_KEY,JSON.stringify(arr)); }
-
+ 
     /* ═══ DELETE MATCH (local for guests, shared for admin) ═══ */
     let pendingDeleteId=null, pendingDeleteLocal=false;
     function closeConfirm(){ pendingDeleteId=null; pendingDeleteLocal=false; document.getElementById('confirmOverlay').classList.remove('open'); }
@@ -1016,7 +1134,7 @@
       renderMatches();
     });
     function attachTrashListeners() { document.querySelectorAll('.trash-btn').forEach(btn=>{ btn.addEventListener('click',()=>{ pendingDeleteId=btn.dataset.id; pendingDeleteLocal=btn.dataset.local==='1'; document.getElementById('confirmOverlay').classList.add('open'); }); }); }
-
+ 
     // Delete a shared (Firestore) match. If it was finished, undo the exact Elo/games/wins/losses it added.
     async function deleteSharedMatch(matchId) {
       const match=_matchCache[matchId];
@@ -1024,7 +1142,7 @@
         const maps=match.maps||[];
         const players=[...(match.teamA||[]),...(match.teamB||[])];
         await Promise.all(players.map(async p=>{
-          const dbPlayer=allCsPlayers.find(cp=>cp.nickname===p.nickname);
+          const dbPlayer=findCsPlayer(p);
           if(!dbPlayer||!dbPlayer._id) return;
           const onA=(match.teamA||[]).some(x=>x.nickname===p.nickname);
           let wins=0, losses=0;
@@ -1048,7 +1166,7 @@
       delete _matchCache[matchId];
       renderCsTable();
     }
-
+ 
     /* ═══ RESULT MODAL ═══ */
     function attachResultBtnListeners() {
       document.querySelectorAll('.add-result-btn').forEach(btn => {
@@ -1058,6 +1176,7 @@
           let matchData;
           if(isLocal) {
             matchData = getLocalMatches().find(m=>m.id===matchId);
+            if(matchData) syncMatchNicknames(matchData);
           } else {
             matchData = _matchCache[matchId];
           }
@@ -1066,10 +1185,10 @@
         });
       });
     }
-
+ 
     // Cache match data when rendering so result modal can access it
     const _matchCache = {};
-
+ 
     /* ═══ RENDER MATCHES ═══ */
     async function renderMatches() {
       const container=document.getElementById('matchesList');
@@ -1077,22 +1196,22 @@
       let dbMatches=[];
       try {
         const snap=await getDocs(query(collection(db,'matches'),orderBy('createdAt','desc')));
-        dbMatches=snap.docs.map(d=>{ const m={id:d.id,...d.data(),local:false}; _matchCache[m.id]=m; return m; });
+        dbMatches=snap.docs.map(d=>{ const m={id:d.id,...d.data(),local:false}; syncMatchNicknames(m); _matchCache[m.id]=m; return m; });
       } catch(e) { console.error(e); }
-      const localMatches=getLocalMatches().map(m=>({...m,createdAt:{toDate:()=>new Date(m.createdAt)},local:true}));
+      const localMatches=getLocalMatches().map(m=>{ syncMatchNicknames(m); return {...m,createdAt:{toDate:()=>new Date(m.createdAt)},local:true}; });
       const allMatches=[...localMatches,...dbMatches];
-
+ 
       if(!allMatches.length) {
         container.innerHTML='<div class="matches-empty"><div class="matches-empty-icon">&#127918;</div><div class="matches-empty-title">Матчів ще немає</div><div class="matches-empty-sub">Створіть перший матч, натиснувши кнопку вище</div></div>';
         return;
       }
-
+ 
       const teamRows=(team,finished)=>(team||[]).map(p=>{
         let extra='';
         if(finished&&p.eloChange!=null) extra=' <span style="font-size:11px;color:'+(p.eloChange>=0?'var(--teal)':'var(--coral)')+'">('+(p.eloChange>=0?'+':'')+p.eloChange+')</span>';
         return '<div class="match-player-row"><span>'+p.nickname+'</span><span class="match-player-stats"><span>'+p.elo+' elo'+extra+'</span></span></div>';
       }).join('');
-
+ 
       let dbIdx=dbMatches.length;
       container.innerHTML=allMatches.map(match=>{
         const date=match.createdAt?.toDate?match.createdAt.toDate():new Date();
@@ -1121,7 +1240,7 @@
       attachTrashListeners();
       attachResultBtnListeners();
     }
-
+ 
     /* ── Result modal open ── */
     function openResultModal({matchData, matchId, isLocal}) {
       currentResultMatch = {matchData, matchId, isLocal};
@@ -1132,17 +1251,17 @@
       document.getElementById('resultModalOverlay').classList.add('open');
       document.body.style.overflow='hidden';
     }
-
+ 
     function closeResultModal() {
       document.getElementById('resultModalOverlay').classList.remove('open');
       document.body.style.overflow='';
       currentResultMatch=null;
     }
-
+ 
     document.getElementById('resultCloseBtn').addEventListener('click', closeResultModal);
     document.getElementById('resultCancelBtn').addEventListener('click', closeResultModal);
     document.getElementById('resultModalOverlay').addEventListener('click', e=>{ if(e.target===document.getElementById('resultModalOverlay')) closeResultModal(); });
-
+ 
     document.getElementById('addMapBtn').addEventListener('click', () => {
       if(mapCount>=7) return;
       mapCount++;
@@ -1157,9 +1276,9 @@
       mapResults.pop();
       buildResultModal();
     });
-
+ 
     const norm = s => String(s == null ? '' : s).trim().toLowerCase();
-
+ 
     // Map an uploaded results file onto this match's Команда A / Команда B
     function processResult(json) {
       const {matchData} = currentResultMatch;
@@ -1180,7 +1299,7 @@
       const unmatched = allApp.filter(p => !byNick[norm(p.nickname)]).map(p => p.nickname);
       return { map: json.map || '', scoreA, scoreB, winner, statsByNick: byNick, unmatched, gA, gB };
     }
-
+ 
     function readResultFile(file, i) {
       const fr = new FileReader();
       fr.onload = () => {
@@ -1191,7 +1310,7 @@
       };
       fr.readAsText(file);
     }
-
+ 
     function uploadZoneHTML(i) {
       return '<div class="upload-zone" id="dropZone'+i+'">'+
         '<input type="file" accept="application/json,.json" id="fileInput'+i+'" style="display:none">'+
@@ -1201,7 +1320,7 @@
         '<button class="btn btn-primary" id="browseBtn'+i+'">Обрати файл</button>'+
         '</div>';
     }
-
+ 
     function statsTableHTML(label, cls, players, res) {
       const rows = (players || []).map(p => {
         const s = res.statsByNick[norm(p.nickname)];
@@ -1213,7 +1332,7 @@
       return '<div class="stats-team-title '+cls+'">'+label+'</div>'+
         '<table class="stats-table"><thead><tr><th>Гравець</th><th>K</th><th>D</th><th>ADR</th><th>KAST</th><th>Rating</th></tr></thead><tbody>'+rows+'</tbody></table>';
     }
-
+ 
     function resultViewHTML(res, matchData, i) {
       const wA = res.winner === 'A', wB = res.winner === 'B';
       const warn = res.unmatched.length
@@ -1230,7 +1349,7 @@
           statsTableHTML('Команда B','tb',matchData.teamB,res)+
         '</div>';
     }
-
+ 
     function wireMapUploads(i) {
       const input = document.getElementById('fileInput'+i);
       const browse = document.getElementById('browseBtn'+i);
@@ -1246,7 +1365,7 @@
       }
       if (replace) replace.addEventListener('click', () => { mapResults[i] = null; buildResultModal(); });
     }
-
+ 
     function buildResultModal() {
       const {matchData} = currentResultMatch;
       const bar = document.getElementById('mapTabsBar');
@@ -1265,7 +1384,7 @@
       wireMapUploads(i);
       checkSaveBtn();
     }
-
+ 
     function checkSaveBtn() {
       let ok = mapCount > 0;
       for (let i = 0; i < mapCount; i++) {
@@ -1274,7 +1393,7 @@
       }
       document.getElementById('resultSaveBtn').disabled = !ok;
     }
-
+ 
     /* ── Save result ── */
     document.getElementById('resultSaveBtn').addEventListener('click', async () => {
       const {matchData, matchId, isLocal} = currentResultMatch;
@@ -1286,7 +1405,7 @@
         const mp=p=>({...p, kills:stat(p.nickname).kills, deaths:stat(p.nickname).deaths, adr:stat(p.nickname).adr, rating:stat(p.nickname).rating, kast:stat(p.nickname).kast});
         maps.push({map:r.map, scoreA:r.scoreA, scoreB:r.scoreB, winner:r.winner, playersA:(matchData.teamA||[]).map(mp), playersB:(matchData.teamB||[]).map(mp)});
       }
-
+ 
       // Ratings this match adds to each player's form history — one entry per map they played
       const ratingsAdded={};
       {
@@ -1299,18 +1418,18 @@
           });
         });
       }
-
+ 
       // Calculate Elo changes per player across all maps
       const eloDeltas={};
       const allPlayers=[...(matchData.teamA||[]),...(matchData.teamB||[])];
       allPlayers.forEach(p=>{ eloDeltas[p.nickname]=0; });
-
+ 
       maps.forEach(map=>{
         const allWithRating=[...map.playersA,...map.playersB].map(p=>({nickname:p.nickname,rating:parseFloat(p.rating)||0}));
         allWithRating.sort((a,b)=>b.rating-a.rating);
         const ratingBonus={};
         allWithRating.forEach((p,i)=>{ ratingBonus[p.nickname]=RATING_MAP[i]??0; });
-
+ 
         map.playersA.forEach(p=>{
           const base=map.winner==='A'?25:-25;
           eloDeltas[p.nickname]+=(base+ratingBonus[p.nickname]);
@@ -1320,7 +1439,7 @@
           eloDeltas[p.nickname]+=(base+ratingBonus[p.nickname]);
         });
       });
-
+ 
       // Calculate games/wins/losses per player per map
       const gamesAdded={}, winsAdded={}, lossesAdded={};
       allPlayers.forEach(p=>{ gamesAdded[p.nickname]=0; winsAdded[p.nickname]=0; lossesAdded[p.nickname]=0; });
@@ -1328,11 +1447,11 @@
         map.playersA.forEach(p=>{ gamesAdded[p.nickname]++; if(map.winner==='A') winsAdded[p.nickname]++; else lossesAdded[p.nickname]++; });
         map.playersB.forEach(p=>{ gamesAdded[p.nickname]++; if(map.winner==='B') winsAdded[p.nickname]++; else lossesAdded[p.nickname]++; });
       });
-
+ 
       // Build updated teamA/teamB with new elo and eloChange
       const updTeamA=(matchData.teamA||[]).map(p=>({...p, eloChange:eloDeltas[p.nickname], elo:p.elo+eloDeltas[p.nickname]}));
       const updTeamB=(matchData.teamB||[]).map(p=>({...p, eloChange:eloDeltas[p.nickname], elo:p.elo+eloDeltas[p.nickname]}));
-
+ 
       if(isLocal) {
         const localList=getLocalMatches();
         const idx=localList.findIndex(m=>m.id===matchId);
@@ -1344,9 +1463,9 @@
         try {
           await updateDoc(doc(db,'matches',matchId),{ finished:true, maps, teamA:updTeamA, teamB:updTeamB });
         } catch(e) { console.error('Match update failed',e); }
-
+ 
         const updatePromises=allPlayers.map(async p=>{
-          const dbPlayer=allCsPlayers.find(cp=>cp.nickname===p.nickname);
+          const dbPlayer=findCsPlayer(p);
           if(!dbPlayer||!dbPlayer._id) return;
           const newElo=dbPlayer.elo+eloDeltas[p.nickname];
           const newGames=dbPlayer.games+gamesAdded[p.nickname];
@@ -1365,13 +1484,14 @@
         await Promise.all(updatePromises);
         renderCsTable();
       }
-
+ 
       closeResultModal();
       renderMatches();
     });
-
+ 
     /* ═══ INIT ═══ */
     loadCsPlayers();
   </script>
 </body>
 </html>
+ 
